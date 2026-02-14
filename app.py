@@ -121,6 +121,94 @@ st.markdown("""
     .stDateInput > div > div > input {
         border-radius: 12px !important;
     }
+
+    /* Symptom bubble */
+    .symptom-bubble {
+        background: var(--brand);
+        color: white;
+        border-radius: 16px;
+        padding: 0.7rem 1rem;
+        font-size: 0.88rem;
+        line-height: 1.4;
+        margin: 0.5rem 0 1rem 0;
+    }
+
+    /* AI Guidance card */
+    .ai-card {
+        background: #F0F4F5;
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+    }
+    .ai-card-dark {
+        background: var(--brand);
+        color: white;
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+    }
+    .ai-card-dark a {color: #FFD6D6; font-weight: 600;}
+    .ai-card h4, .ai-card-dark h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+    .ai-card-dark h4 {color: white;}
+    .ai-label {font-weight: 700; font-size: 0.88rem;}
+    .ai-text {font-size: 0.85rem; color: #444; line-height: 1.5; margin-top: 0.5rem;}
+    .ai-card-dark .ai-text {color: #E0E0E0;}
+
+    /* Category tag */
+    .cat-tag {
+        display: inline-block;
+        background: var(--brand);
+        color: white;
+        border-radius: 20px;
+        padding: 3px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    /* Red flags */
+    .red-flags-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .red-flag-title {
+        color: #D32F2F;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .red-flag-item {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.88rem; color: #333;
+        padding: 4px 0;
+    }
+    .red-dot {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: #D32F2F; color: white;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* Submitted meta */
+    .submitted-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin: -0.3rem 0 1rem 0;
+    }
+
+    /* Parent update description */
+    .update-desc {
+        font-size: 0.88rem;
+        color: #555;
+        line-height: 1.5;
+        margin: 0.5rem 0 1rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -137,6 +225,8 @@ if "centre_ids" not in st.session_state:
     st.session_state.centre_ids = []
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
+if "selected_case_id" not in st.session_state:
+    st.session_state.selected_case_id = None
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────
@@ -335,6 +425,15 @@ def home_screen():
                     """,
                     unsafe_allow_html=True,
                 )
+                case_id = case["id"]
+                if st.button("View details", key=f"case_{case_id}"):
+                    st.session_state.selected_case_id = case_id
+                    role = st.session_state.role
+                    if role == "parent":
+                        navigate("acknowledge_report")
+                    else:
+                        navigate("case_details")
+                    st.rerun()
     except Exception as e:
         st.error(f"Failed to load cases: {e}")
 
@@ -422,6 +521,241 @@ def symptom_entry_screen():
                 st.error(f"Failed to save case: {e}")
 
 
+# ── Screen 4 – Case Details (Carer view) ─────────────────────────────
+def case_details_screen():
+    require_auth()
+
+    case_id = st.session_state.selected_case_id
+    if not case_id:
+        navigate("home")
+        st.rerun()
+
+    # Header
+    initial = (st.session_state.display_name or "C")[0].upper()
+    col_back, col_spacer, col_avatar = st.columns([6, 2, 1])
+    with col_back:
+        if st.button("← Case Details"):
+            navigate("home")
+            st.rerun()
+    with col_avatar:
+        st.markdown(f"<div class='avatar'>{initial}</div>", unsafe_allow_html=True)
+
+    # Fetch case
+    try:
+        case_res = (
+            sb.table("cases")
+            .select("*")
+            .eq("id", case_id)
+            .maybe_single()
+            .execute()
+        )
+        case = case_res.data
+    except Exception as e:
+        st.error(f"Failed to load case: {e}")
+        return
+
+    if not case:
+        st.warning("Case not found.")
+        return
+
+    # Fetch child name
+    child_name = "Child"
+    first_name = ""
+    try:
+        child_res = (
+            sb.table("children")
+            .select("first_name, last_name")
+            .eq("id", case["child_id"])
+            .maybe_single()
+            .execute()
+        )
+        if child_res.data:
+            first_name = child_res.data["first_name"]
+            child_name = f"{first_name} {child_res.data['last_name']}"
+    except Exception:
+        pass
+
+    # Submitted time
+    created = case.get("created_at", "")
+    try:
+        from datetime import datetime
+        dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+        submitted_str = f"Submitted {dt.strftime('%I:%M %p')}"
+    except Exception:
+        submitted_str = ""
+
+    st.markdown(f"<p class='submitted-meta'>{submitted_str}</p>", unsafe_allow_html=True)
+
+    # Symptoms section
+    st.markdown(f"**{first_name or child_name.split()[0]}'s Symptoms**")
+    symptom_text = case.get("symptom_description", "")
+    st.markdown(
+        f"<div class='symptom-bubble'>{symptom_text}</div>",
+        unsafe_allow_html=True,
+    )
+
+    # AI Guidance
+    ai_recommendation = case.get("ai_recommendation", "")
+    ai_category = case.get("ai_category", "")
+    ai_guidance = case.get("ai_guidance", "")
+    red_flags = case.get("red_flags", []) or []
+
+    if ai_recommendation or ai_guidance:
+        st.markdown(
+            f"""
+            <div class="ai-card">
+                <h4>AI Guidance</h4>
+                <p style="margin:0;"><span class="ai-label">Recommended :</span> {ai_recommendation or "—"}</p>
+                <p style="margin:6px 0;">
+                    <span class="ai-label">Category :</span>
+                    {"<span class='cat-tag'>" + ai_category + "</span>" if ai_category else "—"}
+                </p>
+                <p class="ai-text">{ai_guidance}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <div class="ai-card">
+                <h4>AI Guidance</h4>
+                <p class="ai-text" style="color:#888;">No AI guidance available for this case yet.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    # Red Flags
+    if red_flags:
+        flags_html = "".join(
+            f'<div class="red-flag-item"><span class="red-dot">✕</span> {flag}</div>'
+            for flag in red_flags
+        )
+        st.markdown(
+            f"""
+            <div class="red-flags-card">
+                <div class="red-flag-title">🚩 Red Flags</div>
+                {flags_html}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+# ── Screen 5 – Acknowledge Report (Parent view) ─────────────────────
+def acknowledge_report_screen():
+    require_auth()
+
+    case_id = st.session_state.selected_case_id
+    if not case_id:
+        navigate("home")
+        st.rerun()
+
+    # Header
+    initial = (st.session_state.display_name or "P")[0].upper()
+    col_back, col_spacer, col_avatar = st.columns([6, 2, 1])
+    with col_back:
+        if st.button("← Acknowledge Report"):
+            navigate("home")
+            st.rerun()
+    with col_avatar:
+        st.markdown(f"<div class='avatar'>{initial}</div>", unsafe_allow_html=True)
+
+    # Fetch case
+    try:
+        case_res = (
+            sb.table("cases")
+            .select("*")
+            .eq("id", case_id)
+            .maybe_single()
+            .execute()
+        )
+        case = case_res.data
+    except Exception as e:
+        st.error(f"Failed to load case: {e}")
+        return
+
+    if not case:
+        st.warning("Case not found.")
+        return
+
+    # Fetch child name
+    child_name = "Child"
+    first_name = ""
+    try:
+        child_res = (
+            sb.table("children")
+            .select("first_name, last_name")
+            .eq("id", case["child_id"])
+            .maybe_single()
+            .execute()
+        )
+        if child_res.data:
+            first_name = child_res.data["first_name"]
+            child_name = f"{first_name} {child_res.data['last_name']}"
+    except Exception:
+        pass
+
+    # Title & meta
+    st.markdown(f"### {first_name or child_name.split()[0]}'s Health Update")
+
+    created = case.get("created_at", "")
+    try:
+        from datetime import datetime
+        dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+        submitted_str = f"Submitted {dt.strftime('%I:%M %p')}"
+    except Exception:
+        submitted_str = ""
+
+    st.markdown(f"<p class='submitted-meta'>{submitted_str}</p>", unsafe_allow_html=True)
+
+    st.markdown(
+        f"<p class='update-desc'>Guidance has been provided for {first_name or child_name.split()[0]}'s "
+        f"symptoms. Please review the information and let us know you've seen it.</p>",
+        unsafe_allow_html=True,
+    )
+
+    # AI Guidance (dark card for parent view)
+    ai_guidance = case.get("ai_guidance", "")
+    symptom_text = case.get("symptom_description", "")
+    red_flags = case.get("red_flags", []) or []
+
+    guidance_body = ai_guidance or symptom_text or "No guidance available yet."
+    red_flag_note = ""
+    if red_flags:
+        red_flag_note = f"Watch for any <a href='#'>Red Flags</a>."
+
+    st.markdown(
+        f"""
+        <div class="ai-card-dark">
+            <h4>AI Guidance</h4>
+            <p class="ai-text">{guidance_body}</p>
+            {f"<p class='ai-text' style='margin-top:0.5rem;'>{red_flag_note}</p>" if red_flag_note else ""}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Acknowledge checkbox + button
+    acknowledged = st.checkbox("I have read and understood this update.")
+
+    if st.button("Acknowledge"):
+        if not acknowledged:
+            st.warning("Please confirm you have read and understood this update.")
+        else:
+            try:
+                sb.table("cases").update({
+                    "acknowledged_by_parent": True,
+                    "status": "acknowledged",
+                }).eq("id", case_id).execute()
+                st.success("Report acknowledged. Thank you!")
+                navigate("home")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Failed to acknowledge: {e}")
+
+
 # ── Router ─────────────────────────────────────────────────────────────
 page = st.session_state.page
 
@@ -431,6 +765,10 @@ elif page == "home":
     home_screen()
 elif page == "symptom_entry":
     symptom_entry_screen()
+elif page == "case_details":
+    case_details_screen()
+elif page == "acknowledge_report":
+    acknowledge_report_screen()
 else:
     navigate("login")
     st.rerun()
