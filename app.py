@@ -17,12 +17,21 @@ if not SUPABASE_URL or not SUPABASE_KEY:
     st.stop()
 
 
-@st.cache_resource
 def get_supabase_client():
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 sb = get_supabase_client()
+
+# Restore auth session if we have tokens stored
+if st.session_state.get("access_token") and st.session_state.get("refresh_token"):
+    try:
+        sb.auth.set_session(
+            st.session_state["access_token"],
+            st.session_state["refresh_token"],
+        )
+    except Exception:
+        pass
 
 # ── Global CSS ──────────────────────────────────────────────────────────
 st.markdown("""
@@ -225,6 +234,8 @@ if "centre_ids" not in st.session_state:
     st.session_state.centre_ids = []
 if "access_token" not in st.session_state:
     st.session_state.access_token = None
+if "refresh_token" not in st.session_state:
+    st.session_state.refresh_token = None
 if "selected_case_id" not in st.session_state:
     st.session_state.selected_case_id = None
 
@@ -247,7 +258,7 @@ def do_logout():
         sb.auth.sign_out()
     except Exception:
         pass
-    for key in ["user_id", "display_name", "role", "centre_ids", "access_token"]:
+    for key in ["user_id", "display_name", "role", "centre_ids", "access_token", "refresh_token"]:
         st.session_state[key] = None if key != "centre_ids" else []
     st.session_state.display_name = ""
     st.session_state.role = ""
@@ -285,6 +296,7 @@ def login_screen():
 
                 st.session_state.user_id = user.id
                 st.session_state.access_token = session.access_token
+                st.session_state.refresh_token = session.refresh_token
 
                 # Fetch user profile from users table
                 profile = (
@@ -448,10 +460,11 @@ def symptom_entry_screen():
 
     st.markdown("### New Symptom Entry")
 
-    # Fetch children assigned to this carer
+    # Fetch children assigned to this user
     user_id = st.session_state.user_id
     children = []
     try:
+        # Try array-contains filter first (carer_ids/parent_ids are UUID arrays)
         children_res = (
             sb.table("children")
             .select("id, first_name, last_name, centre_id")
@@ -459,8 +472,35 @@ def symptom_entry_screen():
             .execute()
         )
         children = children_res.data or []
-    except Exception as e:
-        st.error(f"Failed to load children: {e}")
+    except Exception:
+        pass
+
+    if not children:
+        # Fallback: try fetching children by user's centre_ids
+        try:
+            centre_ids = st.session_state.centre_ids or []
+            if centre_ids:
+                children_res = (
+                    sb.table("children")
+                    .select("id, first_name, last_name, centre_id")
+                    .in_("centre_id", centre_ids)
+                    .execute()
+                )
+                children = children_res.data or []
+        except Exception:
+            pass
+
+    if not children:
+        # Last fallback: fetch all children visible to this user (RLS will filter)
+        try:
+            children_res = (
+                sb.table("children")
+                .select("id, first_name, last_name, centre_id")
+                .execute()
+            )
+            children = children_res.data or []
+        except Exception as e:
+            st.error(f"Failed to load children: {e}")
 
     if not children:
         st.warning("No children assigned to you.")
