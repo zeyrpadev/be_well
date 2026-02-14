@@ -1,7 +1,28 @@
 import streamlit as st
 from datetime import date, timedelta
+import os
+from dotenv import load_dotenv
+from supabase import create_client
+
+load_dotenv()
 
 st.set_page_config(page_title="Be Well", page_icon="💚", layout="centered")
+
+# ── Supabase client ────────────────────────────────────────────────────
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    st.error("Missing SUPABASE_URL or SUPABASE_KEY in .env file.")
+    st.stop()
+
+
+@st.cache_resource
+def get_supabase_client():
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+sb = get_supabase_client()
 
 # ── Global CSS ──────────────────────────────────────────────────────────
 st.markdown("""
@@ -106,30 +127,42 @@ st.markdown("""
 # ── Session state defaults ──────────────────────────────────────────────
 if "page" not in st.session_state:
     st.session_state.page = "login"
-
-if "cases" not in st.session_state:
-    st.session_state.cases = [
-        {
-            "date": (date.today() - timedelta(days=1)).strftime("%d %b %Y"),
-            "child": "Darcy Smith",
-            "parent": "Jane Smith",
-            "symptom": "High temperature, sore throat, and mild rash on arms.",
-        },
-        {
-            "date": (date.today() - timedelta(days=3)).strftime("%d %b %Y"),
-            "child": "Lucy Adam",
-            "parent": "Sarah Adam",
-            "symptom": "Persistent cough and runny nose for two days.",
-        },
-    ]
-
-if "user_email" not in st.session_state:
-    st.session_state.user_email = ""
+if "user_id" not in st.session_state:
+    st.session_state.user_id = None
+if "display_name" not in st.session_state:
+    st.session_state.display_name = ""
+if "role" not in st.session_state:
+    st.session_state.role = ""
+if "centre_ids" not in st.session_state:
+    st.session_state.centre_ids = []
+if "access_token" not in st.session_state:
+    st.session_state.access_token = None
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────
 def navigate(page: str):
     st.session_state.page = page
+
+
+def require_auth():
+    """Redirect to login if not authenticated."""
+    if not st.session_state.user_id:
+        navigate("login")
+        st.rerun()
+
+
+def do_logout():
+    """Sign out of Supabase and clear session."""
+    try:
+        sb.auth.sign_out()
+    except Exception:
+        pass
+    for key in ["user_id", "display_name", "role", "centre_ids", "access_token"]:
+        st.session_state[key] = None if key != "centre_ids" else []
+    st.session_state.display_name = ""
+    st.session_state.role = ""
+    navigate("login")
+    st.rerun()
 
 
 # ── Screen 1 – Login ───────────────────────────────────────────────────
@@ -148,12 +181,44 @@ def login_screen():
         unsafe_allow_html=True,
     )
 
-    email = st.text_input("Email or Phone", placeholder="you@example.com")
+    email = st.text_input("Email", placeholder="you@example.com")
+    password = st.text_input("Password", type="password", placeholder="Enter your password")
 
     if st.button("Continue"):
-        st.session_state.user_email = email or "carer@bewell.app"
-        navigate("home")
-        st.rerun()
+        if not email or not password:
+            st.warning("Please enter both email and password.")
+        else:
+            try:
+                res = sb.auth.sign_in_with_password({"email": email, "password": password})
+                user = res.user
+                session = res.session
+
+                st.session_state.user_id = user.id
+                st.session_state.access_token = session.access_token
+
+                # Fetch user profile from users table
+                profile = (
+                    sb.table("users")
+                    .select("display_name, role, centre_ids")
+                    .eq("id", user.id)
+                    .maybe_single()
+                    .execute()
+                )
+                if profile.data:
+                    st.session_state.display_name = profile.data.get("display_name", email)
+                    st.session_state.role = profile.data.get("role", "")
+                    st.session_state.centre_ids = profile.data.get("centre_ids", []) or []
+                else:
+                    st.session_state.display_name = email.split("@")[0].title()
+
+                navigate("home")
+                st.rerun()
+            except Exception as e:
+                error_msg = str(e)
+                if "Invalid login credentials" in error_msg:
+                    st.error("Invalid email or password. Please try again.")
+                else:
+                    st.error(f"Login failed: {error_msg}")
 
     st.markdown(
         "<p style='text-align:right;margin-top:-0.5rem;'>"
@@ -192,19 +257,25 @@ def login_screen():
 
 # ── Screen 2 – Carer Home ─────────────────────────────────────────────
 def home_screen():
-    # Header
-    st.markdown(
-        """
-        <div class="header-bar">
-            <div style="font-size:1.4rem;font-weight:800;color:#2B6777;">BeWell</div>
-            <div class="icons">
-                <span style="font-size:1.3rem;cursor:pointer;">🔔</span>
-                <div class="avatar">C</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    require_auth()
+
+    initial = (st.session_state.display_name or "C")[0].upper()
+
+    # Header with logout
+    col1, col2, col3 = st.columns([6, 1, 1])
+    with col1:
+        st.markdown(
+            "<div style='font-size:1.4rem;font-weight:800;color:#2B6777;'>BeWell</div>",
+            unsafe_allow_html=True,
+        )
+    with col2:
+        st.markdown(
+            f"<div class='avatar'>{initial}</div>",
+            unsafe_allow_html=True,
+        )
+    with col3:
+        if st.button("↩", help="Logout"):
+            do_logout()
 
     st.markdown("### Carer Home")
 
@@ -214,36 +285,93 @@ def home_screen():
 
     st.markdown("#### Recent Cases")
 
-    if not st.session_state.cases:
-        st.info("No cases yet. Tap **New Case** to get started.")
-    else:
-        for case in st.session_state.cases:
-            st.markdown(
-                f"""
-                <div class="case-card">
-                    <div class="date">{case['date']}</div>
-                    <div class="child">{case['child']}</div>
-                    <div class="symptom">{case['symptom']}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+    # Fetch cases from Supabase
+    try:
+        user_id = st.session_state.user_id
+        cases_res = (
+            sb.table("cases")
+            .select("id, child_id, symptom_date, symptom_description, status, created_at")
+            .eq("reported_by", user_id)
+            .order("created_at", desc=True)
+            .limit(20)
+            .execute()
+        )
+        cases = cases_res.data or []
+
+        if not cases:
+            st.info("No cases yet. Tap **New Case** to get started.")
+        else:
+            # Collect child IDs to fetch names
+            child_ids = list({c["child_id"] for c in cases if c.get("child_id")})
+            child_map = {}
+            if child_ids:
+                children_res = (
+                    sb.table("children")
+                    .select("id, first_name, last_name")
+                    .in_("id", child_ids)
+                    .execute()
+                )
+                for ch in children_res.data or []:
+                    child_map[ch["id"]] = f"{ch['first_name']} {ch['last_name']}"
+
+            for case in cases:
+                child_name = child_map.get(case.get("child_id"), "Unknown Child")
+                case_date = case.get("symptom_date", "")
+                try:
+                    from datetime import datetime
+                    dt = datetime.fromisoformat(case_date)
+                    display_date = dt.strftime("%d %b %Y")
+                except Exception:
+                    display_date = case_date or ""
+                symptom = case.get("symptom_description", "")
+
+                st.markdown(
+                    f"""
+                    <div class="case-card">
+                        <div class="date">{display_date}</div>
+                        <div class="child">{child_name}</div>
+                        <div class="symptom">{symptom}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+    except Exception as e:
+        st.error(f"Failed to load cases: {e}")
 
 
 # ── Screen 3 – Symptom Entry ──────────────────────────────────────────
 def symptom_entry_screen():
+    require_auth()
+
     if st.button("← Symptom Entry"):
         navigate("home")
         st.rerun()
 
     st.markdown("### New Symptom Entry")
 
-    children = [
-        "Jane Smith - Darcy Smith",
-        "Sarah Adam - Lucy Adam",
-        "Mark Taylor - Ollie Taylor",
-    ]
-    selected = st.selectbox("Name Child", children, index=0)
+    # Fetch children assigned to this carer
+    user_id = st.session_state.user_id
+    children = []
+    try:
+        children_res = (
+            sb.table("children")
+            .select("id, first_name, last_name, centre_id")
+            .or_(f"carer_ids.cs.{{{user_id}}},parent_ids.cs.{{{user_id}}}")
+            .execute()
+        )
+        children = children_res.data or []
+    except Exception as e:
+        st.error(f"Failed to load children: {e}")
+
+    if not children:
+        st.warning("No children assigned to you.")
+        return
+
+    child_options = {
+        f"{ch['first_name']} {ch['last_name']}": ch for ch in children
+    }
+    selected_name = st.selectbox("Child Name", list(child_options.keys()))
+    selected_child = child_options[selected_name]
 
     entry_date = st.date_input("Date", value=date.today())
 
@@ -259,19 +387,39 @@ def symptom_entry_screen():
         if not symptoms.strip():
             st.warning("Please describe the symptoms before submitting.")
         else:
-            parent_name, child_name = [s.strip() for s in selected.split("-")]
-            new_case = {
-                "date": entry_date.strftime("%d %b %Y"),
-                "child": child_name,
-                "parent": parent_name,
-                "symptom": symptoms.strip(),
-            }
-            if photo:
-                new_case["photo_name"] = photo.name
-            st.session_state.cases.insert(0, new_case)
-            st.success(f"Case for {child_name} saved!")
-            navigate("home")
-            st.rerun()
+            try:
+                photo_url = None
+                if photo:
+                    # Upload photo to Supabase Storage
+                    try:
+                        file_path = f"cases/{user_id}/{entry_date.isoformat()}_{photo.name}"
+                        sb.storage.from_("case-photos").upload(
+                            file_path,
+                            photo.getvalue(),
+                            {"content-type": photo.type},
+                        )
+                        photo_url = sb.storage.from_("case-photos").get_public_url(file_path)
+                    except Exception:
+                        # Storage may not be configured; continue without photo
+                        pass
+
+                case_data = {
+                    "child_id": selected_child["id"],
+                    "centre_id": selected_child.get("centre_id"),
+                    "reported_by": user_id,
+                    "symptom_date": entry_date.isoformat(),
+                    "symptom_description": symptoms.strip(),
+                    "status": "open",
+                }
+                if photo_url:
+                    case_data["photo_url"] = photo_url
+
+                sb.table("cases").insert(case_data).execute()
+                st.success(f"Case for {selected_name} saved!")
+                navigate("home")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Failed to save case: {e}")
 
 
 # ── Router ─────────────────────────────────────────────────────────────
