@@ -1,0 +1,504 @@
++
+    £Ëi˜d  ã                   óŽ  € ^ RI t^ RIHtHt ^ RIt^ RIHt ^ RIH	t	 ]! 4        ]P                  ! RRRR7       ]P                  ! R	4      t]P                  ! R
+4      t
+]'       d	   ]
+'       g$   ]P                  ! R4       ]P                  ! 4        ]P                   R 4       t]! 4       t]P&                  ! R
+RR7       R]P(                  9  d   R]P(                  n        R]P(                  9  d   R]P(                  n        R]P(                  9  d   R]P(                  n        R]P(                  9  d   R]P(                  n        R]P(                  9  d   . ]P(                  n        R]P(                  9  d   R]P(                  n        R]P(                  9  d   R]P(                  n        R R ltR tR tR tR t R t!R  t"R! t#]P(                  P*                  t]R8X  d
+   ]! 4        R# ]R"8X  d
+   ] ! 4        R# ]R#8X  d
+   ]!! 4        R# ]R$8X  d
+   ]"! 4        R# ]R%8X  d
+   ]#! 4        R# ]! R4       ]PH                  ! 4        R# )&é    N)ÚdateÚ	timedelta)Úload_dotenv)Ú
+create_clientzBe Wellu   ðŸ’šÚcentered)Ú
+page_titleÚ	page_iconÚlayoutÚSUPABASE_URLÚSUPABASE_KEYz2Missing SUPABASE_URL or SUPABASE_KEY in .env file.c                  ó*   € \        \        \        4      # ©N)r   r   r   © ó    Ú*C:\Users\Zey\Desktop\be-well-python\app.pyÚget_supabase_clientr      s   € äœ¤|Ó4Ð4r   a  
+<style>
+    /* Hide Streamlit chrome */
+    #MainMenu, header, footer {visibility: hidden;}
+    .block-container {
+        max-width: 420px !important;
+        padding: 1rem 1.5rem !important;
+    }
+
+    /* Brand colours */
+    :root {
+        --brand: #2B6777;
+        --brand-light: #52AB98;
+        --bg: #F5F5F5;
+        --card-bg: #FFFFFF;
+        --text-dark: #1E1E1E;
+        --text-muted: #888888;
+    }
+
+    /* Teal primary buttons */
+    .stButton > button {
+        background-color: var(--brand) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 25px !important;
+        padding: 0.6rem 1.5rem !important;
+        font-weight: 600 !important;
+        width: 100%;
+        transition: background-color 0.2s;
+    }
+    .stButton > button:hover {
+        background-color: var(--brand-light) !important;
+    }
+
+    /* Social / outline buttons */
+    .social-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        border: 1.5px solid #ddd; border-radius: 25px;
+        padding: 10px 0; width: 48%; text-align: center;
+        font-size: 0.9rem; font-weight: 500; color: var(--text-dark);
+        background: white; cursor: pointer;
+    }
+    .social-btn:hover {background: #f9f9f9;}
+    .social-row {display: flex; gap: 4%; justify-content: center; margin: 0.5rem 0;}
+
+    /* Divider */
+    .or-divider {
+        display: flex; align-items: center; gap: 12px;
+        color: var(--text-muted); margin: 1rem 0; font-size: 0.85rem;
+    }
+    .or-divider::before, .or-divider::after {
+        content: ""; flex: 1; height: 1px; background: #ddd;
+    }
+
+    /* Case card */
+    .case-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .case-card .date {font-size: 0.75rem; color: var(--text-muted);}
+    .case-card .child {font-weight: 700; font-size: 1rem; margin: 2px 0;}
+    .case-card .symptom {font-size: 0.85rem; color: #555;}
+
+    /* Header bar */
+    .header-bar {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .header-bar .icons {display: flex; gap: 12px; align-items: center;}
+    .avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: var(--brand-light); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 0.9rem;
+    }
+
+    /* Back button */
+    .back-link {
+        font-size: 1.05rem; font-weight: 600; color: var(--brand);
+        cursor: pointer; text-decoration: none;
+    }
+
+    /* Links */
+    .link-text {color: var(--brand); font-weight: 600; text-decoration: none;}
+    .muted {color: var(--text-muted); font-size: 0.82rem; text-align: center;}
+
+    /* Inputs */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div,
+    .stDateInput > div > div > input {
+        border-radius: 12px !important;
+    }
+
+    /* Symptom bubble */
+    .symptom-bubble {
+        background: var(--brand);
+        color: white;
+        border-radius: 16px;
+        padding: 0.7rem 1rem;
+        font-size: 0.88rem;
+        line-height: 1.4;
+        margin: 0.5rem 0 1rem 0;
+    }
+
+    /* AI Guidance card */
+    .ai-card {
+        background: #F0F4F5;
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+    }
+    .ai-card-dark {
+        background: var(--brand);
+        color: white;
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+    }
+    .ai-card-dark a {color: #FFD6D6; font-weight: 600;}
+    .ai-card h4, .ai-card-dark h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+    .ai-card-dark h4 {color: white;}
+    .ai-label {font-weight: 700; font-size: 0.88rem;}
+    .ai-text {font-size: 0.85rem; color: #444; line-height: 1.5; margin-top: 0.5rem;}
+    .ai-card-dark .ai-text {color: #E0E0E0;}
+
+    /* Category tag */
+    .cat-tag {
+        display: inline-block;
+        background: var(--brand);
+        color: white;
+        border-radius: 20px;
+        padding: 3px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    /* Red flags */
+    .red-flags-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .red-flag-title {
+        color: #D32F2F;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    .red-flag-item {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.88rem; color: #333;
+        padding: 4px 0;
+    }
+    .red-dot {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: #D32F2F; color: white;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* Submitted meta */
+    .submitted-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin: -0.3rem 0 1rem 0;
+    }
+
+    /* Parent update description */
+    .update-desc {
+        font-size: 0.88rem;
+        color: #555;
+        line-height: 1.5;
+        margin: 0.5rem 0 1rem 0;
+    }
+</style>
+T©Úunsafe_allow_htmlÚpageÚloginÚuser_idÚdisplay_nameÚ ÚroleÚ
+centre_idsÚaccess_tokenÚselected_case_idc                ó$   € V ^8„  d   QhR\         /# )é   r   )Ústr)Úformats   "r   Ú__annotate__r"   é   s   € ÷ !ñ !”3ñ !r   c                 ó0   € V \         P                  n        R # r   )ÚstÚ
+session_stater   )r   s   &r   Únavigater&   é   s   € Ø „B×ÑÖr   c                 óŠ   € \         P                  P                  '       g#   \        R4       \         P                  ! 4        R# R# )z'Redirect to login if not authenticated.r   N)r$   r%   r   r&   Úrerunr   r   r   Úrequire_authr)   í   s*   € ä
+×Ñ×#×#Ð#ÜÔÜ
+ŠŽ
+ñ $r   c                 óD  €  \         P                  P                  4        R F  p V R8w  d   RM. \        P
+                  V &   K!  	  R\        P
+                  n        R\        P
+                  n        \        R4       \        P                  ! 4        R#   \         d     L~i ; i)z'Sign out of Supabase and clear session.r   Nr   r   )r   r   r   r   r   )
+ÚsbÚauthÚsign_outÚ	Exceptionr$   r%   r   r   r&   r(   ©Úkeys    r   Ú	do_logoutr1   ô   s   € ð
+Ü
+‰×ÑÔó QˆØ(+¨|Ô(;¡ÀŒ×Ñ˜Óñ Qà$&„B×ÑÔ!Ø„B×ÑÔÜˆWÔÜ‡H‚H†Jøô ô 
+Ùð
+ús   ‚B ÂBÂBc                  ó8  € \         P                  ! R RR7       \         P                  ! RRR7       \         P                  ! RRR7       \         P                  ! R4       \         P                  ! RRR7       \         P                  ! RRR	7      p \         P                  ! R
+RRR
+7      p\         P                  ! R4      '       Ed    V '       d	   V'       g   \         P                  ! R4       EM× \
+        P                  P                  RV RV/4      pVP                  pVP                  pVP                  \         P                  n        VP                  \         P                  n
+        \
+        P                  R4      P                  R4      P!                  RVP                  4      P#                  4       P%                  4       pVP&                  '       d™   VP&                  P)                  RV 4      \         P                  n        VP&                  P)                  RR4      \         P                  n        VP&                  P)                  R. 4      ;'       g    . \         P                  n        M9V P1                  R4      ^ ,          P3                  4       \         P                  n        \5        R4       \         P6                  ! 4        \         P                  ! RRR7       \         P                  ! RRR7       \         P                  ! R RR7       \         P                  ! R!RR7       \         P                  ! R"RR7       R#   \8         dQ   p\;        T4      pRT9   d   \         P<                  ! R4        Rp?L²\         P<                  ! RT 24        Rp?LÐRp?ii ; i)#z0<div style='text-align:center;margin-top:2rem;'>Tr   z<span style='font-size:2.4rem;font-weight:800;color:#2B6777;'>Be</span><span style='font-size:2.4rem;font-weight:800;color:#52AB98;'>Well</span>ú</div>z## Welcome Back!z]<p style='color:#888;margin-top:-0.8rem;'>Log in to continue caring for your little ones.</p>ÚEmailzyou@example.com)ÚplaceholderÚPasswordÚpasswordzEnter your password)Útyper5   ÚContinuez%Please enter both email and password.ÚemailÚuserszdisplay_name, role, centre_idsÚidr   r   r   r   Ú@ÚhomezInvalid login credentialsz,Invalid email or password. Please try again.zLogin failed: Nz<p style='text-align:right;margin-top:-0.5rem;'><a href='#' class='link-text' style='font-size:0.85rem;'>Forgot Password?</a></p>z <div class='or-divider'>Or</div>uQ  
+        <div class="social-row">
+            <div class="social-btn">ðŸŽ&nbsp; Apple</div>
+            <div class="social-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                     width="18" style="vertical-align:middle;"> Google
+            </div>
+        </div>
+        zn<p class='muted' style='margin-top:1rem;'>Don't have an account? <a href='#' class='link-text'>Sign up</a></p>zÇ<p class='muted' style='margin-top:2rem;font-size:0.72rem;'>By continuing you agree to our <a href='#' class='link-text'>Terms of Service</a> and <a href='#' class='link-text'>Privacy Policy</a>.</p>)r$   ÚmarkdownÚ
+text_inputÚbuttonÚwarningr+   r,   Úsign_in_with_passwordÚuserÚsessionr<   r%   r   r   ÚtableÚselectÚeqÚmaybe_singleÚexecuteÚdataÚgetr   r   r   ÚsplitÚtitler&   r(   r.   r    Úerror)r:   r7   ÚresrD   rE   ÚprofileÚeÚ	error_msgs           r   Úlogin_screenrT     s•  € Ü‡K‚KÐBÐVZÕ[Ü‡K‚Kð	Tàõô
+ ‡K‚K¨DÕ1ä‡K‚KÐ"Ô#Ü‡K‚KØgØõô
+ 
+MŠM˜'Ð/@ÔA€EÜ}Š}˜Z¨jÐF[Ô\€Hä	‡y‚y×ÓßŸHÜJŠJÐ>Ö?ð
+;Ü—g‘g×3Ñ3°W¸eÀZÐQYÐ4ZÓ[Ø—x‘xØŸ+™+à+/¯7©7”× Ñ Ô(Ø07×0DÑ0D”× Ñ Ô-ô —H‘H˜WÓ%ß‘VÐ<Ó=ß‘R˜˜dŸg™gÓ&ß!‘\“^ß‘W“Yð ð —<—<<Ø4;·L±L×4DÑ4DÀ^ÐUZÓ4[”B×$Ñ$Ô1Ø,3¯L©L×,<Ñ,<¸VÀRÓ,H”B×$Ñ$Ô)Ø29·,±,×2BÑ2BÀ<ÐQSÓ2T×2ZÐ2ZÐXZ”B×$Ñ$Õ/à49·K±KÀÓ4DÀQÕ4G×4MÑ4MÓ4O”B×$Ñ$Ô1ä˜Ô Ü—’”
+ô ‡K‚Kð	\àõô ‡K‚KÐ2ÀdÕKä‡K‚Kð	ð õô ‡K‚Kð	Oàõô ‡K‚Kð	Dð ÷	øôE ô 
+;Ü ›F	Ø.°)Ô;Ü—H’HÐK×LÑLä—H’H˜~¨i¨[Ð9×:Ñ:ûð
+;ús-   Ã.C$L> ÇB L> ÉA0L> Ì>NÍ	(NÍ6NÎNc            
+      ó	  € \        4        \        P                  P                  ;'       g    R ^ ,          P	                  4       p \        P
+                  ! . R,O4      w  rpV;_uu_ 4        \        P                  ! RRR7       RRR4       V;_uu_ 4        \        P                  ! RV  R2RR7       RRR4       T;_uu_ 4        \        P                  ! RRR	7      '       d   \        4        RRR4       \        P                  ! R
+4       \        P                  ! R4      '       d!   \        R4       \        P                  ! 4        \        P                  ! R
+4        \        P                  P                  p\        P                  R4      P                  R4      P                  RV4      P!                  RRR7      P#                  ^4      P%                  4       pVP&                  ;'       g    . pV'       g   \        P(                  ! R4       R# \+        V Uu0 uF$  qwP-                  R4      '       g   K  VR,          kK&  	  up4      p/ p	V'       d~   \        P                  R4      P                  R4      P/                  RV4      P%                  4       p
+V
+P&                  ;'       g    .  F!  pVR,           RVR,           2W›R,          &   K#  	  V EF"  pV	P-                  VP-                  R4      R4      p
+VP-                  RR4      p ^ RIHp VP3                  V4      pVP5                  R4      pVP-                  R R4      p\        P                  ! R!V R"V
+ R#V R$2RR7       VR,          p\        P                  ! R%R&V 2R'7      '       g   KÀ  V\        P                  n        \        P                  P:                  pVR(8X  d
+   \        R)4       M\        R*4       \        P                  ! 4        EK%  	  R#   + '       g   i     EL‚; i  + '       g   i     ELg; i  + '       g   i     EL@; iu upi   \6         d    T;'       g    Rp EL$i ; i  \6         d%   p\        P<                  ! R+T 24        Rp?R# Rp?ii ; i)-ÚCzI<div style='font-size:1.4rem;font-weight:800;color:#2B6777;'>BeWell</div>Tr   Nú<div class='avatar'>r3   u   â†©ÚLogout)Úhelpz### Carer Homeu
+   ï¼‹  New CaseÚ
+symptom_entryz#### Recent CasesÚcaseszCid, child_id, symptom_date, symptom_description, status, created_atÚreported_byÚ
+created_at)Údescz.No cases yet. Tap **New Case** to get started.Úchild_idÚchildrenzid, first_name, last_namer<   Ú
+first_nameÚ Ú	last_namez
+Unknown ChildÚsymptom_dater   ©Údatetimez%d %b %YÚsymptom_descriptionzW
+                    <div class="case-card">
+                        <div class="date">z2</div>
+                        <div class="child">z4</div>
+                        <div class="symptom">z6</div>
+                    </div>
+                    zView detailsÚcase_r/   ÚparentÚacknowledge_reportÚcase_detailszFailed to load cases: )é   é   rm   )r)   r$   r%   r   ÚupperÚcolumnsr?   rA   r1   r&   r(   r   r+   rF   rG   rH   ÚorderÚlimitrJ   rK   ÚinfoÚlistrL   Úin_rf   Ú
+fromisoformatÚstrftimer.   r   r   rO   )ÚinitialÚcol1Úcol2Úcol3r   Ú	cases_resr[   ÚcÚ	child_idsÚ	child_mapÚchildren_resÚchÚcaseÚ
+child_nameÚ	case_daterf   ÚdtÚdisplay_dateÚsymptomÚcase_idr   rR   s                         r   Úhome_screenrˆ   ]  sx  € Ü„Nä×Ñ×,Ñ,×3Ð3°°QÕ7×=Ñ=Ó?€Gô —z’z¢)Ó,Ñ€Dß	
+ŠÜ
+ŠØWØ"õ	
+÷ 
+÷
+ 
+ŠÜ
+ŠØ" 7 )¨6Ð2Ø"õ	
+÷ 
+÷
+ 
+ŠÜ
+9Š9U ×*Ó*ÜŒK÷ 
+ô ‡K‚KÐ Ô!ä	‡y‚y×!Ò!ÜÔ!Ü
+ŠŒ
+ä‡K‚KÐ#Ô$ð;/Ü×"Ñ"×*Ñ*ˆäH‰HWÓß
+‰VÐYÓ
+Zß
+‰R
+˜wÓ
+'ß
+‰U< dˆUÓ
++ß
+‰U2‹Yß
+‰W‹Yð
+ 	ð —‘×$Ð$ "ˆçÜGŠGÐDÖEô ±UÓP±U°¿e¹eÀJ×>Oœm˜a 
+Ÿm˜m±UÑPÓQˆIØˆIßä—H‘H˜ZÓ(ß‘VÐ7Ó8ß‘S˜˜yÓ)ß‘W“Yð	 ð '×+Ñ+×1Ð1¨rÒ1BØ-/°Õ-=Ð,>¸aÀÀ;ÅÐ?PÐ*QI hÓ'ñ 2ô Ø&Ÿ]™]¨4¯8©8°JÓ+?ÀÓQ
+Ø ŸH™H ^°RÓ8	ð3Ý1Ø!×/Ñ/°	Ó:BØ#%§;¡;¨zÓ#:Lð Ÿ(™(Ð#8¸"Ó=ä—’ð+à+7¨.ð 9,Ø,6¨<ð 8.Ø.5¨Yð 7ð	ð '+õ	ð ˜t*Ü—9’9˜^°5¸¸	Ð1B×CÕCØ8?”B×$Ñ$Ô5Ü×+Ñ+×0Ñ0DØ˜xÔ'Ü Ð!5Õ6ä  Ô0Ü—H’H—Jó; ÷g 
+ˆú÷
+ 
+ˆú÷
+ 
+ˆüò: Qøô& !ô 3Ø#,§? ?°“Lð3ûô. ô /Ü
+ŠÐ)¨!¨Ð-×.Ò.ûð/ús§   Á)O;ÂPÃ)P#ÅBQ Ç,
+Q Ç7Q È	Q ÈP7È5
+P7ÉQ ÉAQ Ê(A!Q Ì
+(P<Ì2AQ ÎA'Q Ï;P	ÐP 	Ð#P4	Ð7Q Ð<QÑQÑQ ÑQÑQ ÑR	Ñ%RÒR	c                  ó²  € \        4        \        P                  ! R 4      '       d!   \        R4       \        P                  ! 4        \        P
+                  ! R4       \        P                  P                  p . p \        P                  R4      P                  R4      P                  RV  RV  R24      P                  4       pVP                  ;'       g    . pV'       g   \        P                   ! R
+4       R	# V Uu/ uF  qDR,           RVR
+,           2VbK  	  pp\        P"                  ! R\%        VP'                  4       4      4      pWV,          p\        P(                  ! R\*        P,                  ! 4       R7      p\        P.                  ! RR^xR7      p	\        P0                  ! R. R*OR7      p
+\        P                  ! R4      '       Ed   V	P3                  4       '       g   \        P                   ! R4       R	#  R	pV
+'       d    RV  RVP5                  4        RV
+P6                   2p\        P8                  P;                  R4      P=                  VV
+P?                  4       RV
+P@                  /4       \        P8                  P;                  R4      PC                  V4      pRVR,          RVPE                  R4      R V R!VP5                  4       R"V	P3                  4       R#R$/p
+V'       d   W½R%&   \        P                  R&4      PG                  V
+4      P                  4        \        PH                  ! R'V R(24       \        R4       \        P                  ! 4        R	# R	#   \         d%   p\        P                  ! RT 24        R	p?EL°R	p?ii ; iu upi   \         d     ELi ; i  \         d%   p\        P                  ! R)T 24        R	p?R	# R	p?ii ; i)+u   â† Symptom Entryr>   z### New Symptom Entryr`   z$id, first_name, last_name, centre_idzcarer_ids.cs.{z},parent_ids.cs.{Ú}zFailed to load children: NzNo children assigned to you.ra   rb   rc   z
+Child NameÚDate)ÚvaluezSymptom Descriptionu*   Describe the symptoms you have observedâ€¦)r5   ÚheightzUpload Photo (optional))r8   ÚSubmitz/Please describe the symptoms before submitting.zcases/Ú/Ú_zcase-photoszcontent-typer_   r<   Ú	centre_idr\   rd   rg   ÚstatusÚopenÚ	photo_urlr[   z	Case for z saved!zFailed to save case: )ÚpngÚjpgÚjpeg)%r)   r$   rA   r&   r(   r?   r%   r   r+   rF   rG   Úor_rJ   rK   r.   rO   rB   Ú	selectboxrs   ÚkeysÚ
+date_inputr   ÚtodayÚ	text_areaÚ
+file_uploaderÚstripÚ	isoformatÚnameÚstorageÚfrom_ÚuploadÚgetvaluer8   Úget_public_urlrL   ÚinsertÚsuccess)r   r`   r   rR   r€   Ú
+child_optionsÚ
+selected_nameÚselected_childÚ
+entry_dateÚsymptomsÚphotor”   Ú	file_pathÚ	case_datas                 r   Úsymptom_entry_screenr±   º  s"  € Ü„Nä	‡y‚yÐ$×%Ò%ÜÔÜ
+ŠŒ
+ä‡K‚KÐ'Ô(ô ×Ñ×&Ñ&€GØ€Hð	2äH‰HZÓ ß
+‰VÐ:Ó
+;ß
+‰S? 7 )Ð+>¸w¸iÀrÐJÓ
+Kß
+‰W‹Yð	 	ð  ×$Ñ$×*Ð*¨ˆ÷ Ü
+
+Š
+Ð1Ô2Ùñ ?GóÙ>F¸ˆlÕÐ
+˜A˜b oÐ.Ð/°Ò3¹hð ð ô —L’L ¬t°M×4FÑ4FÓ4HÓ/IÓJ€MØ"Õ1€Nä—’˜v¬T¯ZªZ«\Ô:€Jä|Š|ØØ@Øô€Hô 
+×ÒÐ6Ò=SÔT€Eä	‡y‚y×ÓØ~‰~×ÒÜJŠJÐHÖIð 
+6Ø 	ßð
+Ø&,¨W¨I°Q°z×7KÑ7KÓ7MÐ6NÈaÐPU×PZÑPZÈ|Ð$\˜	ÜŸ
+™
+×(Ñ(¨Ó7×>Ñ>Ø%Ø!ŸN™NÓ,Ø+¨U¯Z©ZÐ8ôô
+ %'§J¡J×$4Ñ$4°]Ó$C×$RÑ$RÐS\Ó$]˜	ð  ¨tÕ 4Ø ×!3Ñ!3°KÓ!@Ø! 7Ø" J×$8Ñ$8Ó$:Ø)¨8¯>©>Ó+;Ø˜fð
+	÷ Ø-6˜kÑ*ä—‘˜Ó!×(Ñ(¨Ó3×;Ñ;Ô=Ü—
+’
+˜Y } o°WÐ=Ô>Ü˜Ô Ü—’–
+ñE øô/ ô 2Ü
+ŠÐ,¨Q¨CÐ0×1Ò1ûð2üòøô@ %ô âðûô& ô 
+6Ü—’Ð0°°Ð4×5Ò5ûð
+6úsj   Á:AM ÃM Ã<NÇ<	N' ÈBN Ê"AN' Ë*A0N' ÍN
+Í)NÎN
+ÎN$Î N' Î#N$Î$N' Î'OÎ2OÏOc            	      ó
+	  € \        4        \        P                  P                  p V '       g!   \	        R 4       \        P
+                  ! 4        \        P                  P                  ;'       g    R^ ,          P                  4       p\        P                  ! . R0O4      w  r#pT;_uu_ 4        \        P                  ! R4      '       d!   \	        R 4       \        P
+                  ! 4        RRR4       V;_uu_ 4        \        P                  ! RV R2RR7       RRR4        \        P                  R4      P                  R	4      P                  R
+V 4      P                  4       P!                  4       pVP"                  pT'       g   \        P(                  ! R4       R# R
+pRp	 \        P                  R4      P                  R4      P                  R
+TR,          4      P                  4       P!                  4       p
+T
+P"                  '       d,   T
+P"                  R,          p	T	 RT
+P"                  R,           2pTP+                  RR4      p ^ RIHp TP/                  TP1                  RR4      4      p
+RT
+P3                  R4       2p\        P                  ! RT R2RR7       \        P                  ! RT	;'       g    TP5                  4       ^ ,           R24       TP+                  RR4      p\        P                  ! R T R2RR7       TP+                  R!R4      pTP+                  R"R4      pTP+                  R#R4      pTP+                  R$. 4      ;'       g    . pT'       g	   T'       dF   \        P                  ! R%T;'       g    R& R'T'       d   R(T,           R),           MR& R*T R+2RR7       M\        P                  ! R,RR7       T'       d7   RP7                  R- T 4       4      p\        P                  ! R.T R/2RR7       R# R#   + '       g   i     EL&; i  + '       g   i     EL; i  \$         d%   p\        P&                  ! RT 24        Rp?R# Rp?ii ; i  \$         d     EL8i ; i  \$         d    Rp ELþi ; i)1r>   rV   u   â† Case DetailsNrW   r3   Tr   r[   Ú*r<   úFailed to load case: úCase not found.ÚChildr   r`   úfirst_name, last_namer_   ra   rb   rc   r]   re   ÚZú+00:00ú
+Submitted ú%I:%M %pú<p class='submitted-meta'>ú</p>z**z
+'s Symptoms**rg   z<div class='symptom-bubble'>Úai_recommendationÚai_categoryÚai_guidanceÚ	red_flagsz™
+            <div class="ai-card">
+                <h4>AI Guidance</h4>
+                <p style="margin:0;"><span class="ai-label">Recommended :</span> u   â€”z€</p>
+                <p style="margin:6px 0;">
+                    <span class="ai-label">Category :</span>
+                    z<span class='cat-tag'>z</span>z9
+                </p>
+                <p class="ai-text">z$</p>
+            </div>
+            zÎ
+            <div class="ai-card">
+                <h4>AI Guidance</h4>
+                <p class="ai-text" style="color:#888;">No AI guidance available for this case yet.</p>
+            </div>
+            c              3   ó.   "  € T F  pR V R2x € K
+  	  R# 5i)u<   <div class="red-flag-item"><span class="red-dot">âœ•</span> r3   Nr   )Ú.0Úflags   & r   Ú	<genexpr>Ú&case_details_screen.<locals>.<genexpr>w  s"   é € ð 
+á!ð KÈ4È&ÐPVÕWÛ!ùs   ‚u{   
+            <div class="red-flags-card">
+                <div class="red-flag-title">ðŸš© Red Flags</div>
+                z 
+            </div>
+            ©rl   r   rm   )r)   r$   r%   r   r&   r(   r   rn   ro   rA   r?   r+   rF   rG   rH   rI   rJ   rK   r.   rO   rB   rL   rf   ru   Úreplacerv   rM   Újoin)r‡   rw   Úcol_backÚ
+col_spacerÚ
+col_avatarÚcase_resr   rR   r‚   ra   Ú	child_resÚcreatedrf   r„   Ú
+submitted_strÚsymptom_textr¾   r¿   rÀ   rÁ   Ú
+flags_htmls                        r   Úcase_details_screenrÓ   
+  sÊ  € Ü„Nä×Ñ×/Ñ/€GßÜÔÜ
+ŠŒ
+ô ×Ñ×,Ñ,×3Ð3°°QÕ7×=Ñ=Ó?€GÜ')§z¢z²)Ó'<Ñ$€H˜*ß	ŠÜ
+9Š9Ð'×(Ò(ÜVÔÜHŠHŒJ÷ 
+÷ 
+ŠÜ
+ŠÐ*¨7¨)°6Ð:ÈdÕS÷ 
+ðäH‰HWÓß
+‰VC‹[ß
+‰RgÓ
+ß
+‰\‹^ß
+‰W‹Yð 	ð }‰}ˆ÷
+ Ü
+
+Š
+Ð$Ô%Ùð €JØ€Jð
+äH‰HZÓ ß
+‰VÐ+Ó
+,ß
+‰Rd˜:Õ&Ó
+'ß
+‰\‹^ß
+‰W‹Yð 	ð >>ˆ>Ø"Ÿ™¨Õ5ˆJØ&˜< q¨¯©¸Õ)DÐ(EÐFˆJð
+ h‰h| RÓ(€GðÝ%Ø
+×
+#Ñ
+# G§O¡O°C¸Ó$BÓ
+CˆØ$ R§[¡[°Ó%<Ð$=Ð>ˆ
+ô ‡K‚KÐ,¨]¨O¸4Ð@ÐTXÕYô ‡K‚K"Z×8Ð8 :×#3Ñ#3Ó#5°aÕ#8Ð9¸ÐGÔHØ—8‘8Ð1°2Ó6€LÜ‡K‚KØ
+& | n°FÐ;Øõð Ÿ™Ð!4°bÓ9ÐØ—(‘(˜=¨"Ó-€KØ—(‘(˜=¨"Ó-€KØ—‘˜ bÓ)×/Ð/¨R€IçŸKÜ
+ŠðRð Sd×RlÐRlÐglÐQmð n÷ LWÐ-°Õ;¸iÖGÐ\aÐbð c$à$/ =ð 1
+ð
+
+ð #ö
+	
+ô 	Šð
+ð #õ	
+÷ Ø—W‘Wñ 
+á!ó
+ó 
+ˆ
+ô 	Šðð ð 
+ð
+ð #÷	
+ñ ÷} 
+ˆú÷ 
+ˆûô ô Ü
+ŠÐ(¨¨Ð,Ô-Ýûðûô, ô 
+Úð
+ûô ô Ø‹
+ðús\   Â+=PÃ:PÄ AP- Æ!A(Q È
++Q É;Q1 ÐP	ÐP*	Ð-QÐ8QÑQÑQ.Ñ-Q.Ñ1
+RÒRc                  óN
+  € \        4        \        P                  P                  p V '       g!   \	        R 4       \        P
+                  ! 4        \        P                  P                  ;'       g    R^ ,          P                  4       p\        P                  ! . R2O4      w  r#pT;_uu_ 4        \        P                  ! R4      '       d!   \	        R 4       \        P
+                  ! 4        RRR4       V;_uu_ 4        \        P                  ! RV R2RR7       RRR4        \        P                  R4      P                  R	4      P                  R
+V 4      P                  4       P!                  4       pVP"                  pT'       g   \        P(                  ! R4       R# R
+pRp	 \        P                  R4      P                  R4      P                  R
+TR,          4      P                  4       P!                  4       p
+T
+P"                  '       d,   T
+P"                  R,          p	T	 RT
+P"                  R,           2p\        P                  ! RT	;'       g    TP+                  4       ^ ,           R24       TP-                  RR4      p ^ RIHp TP1                  TP3                  RR4      4      p
+RT
+P5                  R4       2p\        P                  ! RT R2RR7       \        P                  ! RT	;'       g    TP+                  4       ^ ,           R 2RR7       TP-                  R!R4      pTP-                  R"R4      pTP-                  R#. 4      ;'       g    . pT;'       g
+    T;'       g    R$pRpT'       d   R%p\        P                  ! R&T R'T'       d   R(T R2MR R)2RR7       \        P6                  ! R*4      p\        P                  ! R+4      '       d    T'       g   \        P(                  ! R,4       R#  \        P                  R4      P9                  R-RR.R//4      P                  R
+T 4      P!                  4        \        P:                  ! R04       \	        R 4       \        P
+                  ! 4        R# R#   + '       g   i     EL–; i  + '       g   i     EL{; i  \$         d%   p\        P&                  ! RT 24        Rp?R# Rp?ii ; i  \$         d     EL¨i ; i  \$         d    Rp EL5i ; i  \$         d%   p\        P&                  ! R1T 24        Rp?R# Rp?ii ; i)3r>   ÚPu   â† Acknowledge ReportNrW   r3   Tr   r[   r³   r<   r´   rµ   r¶   r   r`   r·   r_   ra   rb   rc   z### z's Health Updater]   re   r¸   r¹   rº   r»   r¼   r½   z6<p class='update-desc'>Guidance has been provided for zN's symptoms. Please review the information and let us know you've seen it.</p>rÀ   rg   rÁ   zNo guidance available yet.z(Watch for any <a href='#'>Red Flags</a>.zd
+        <div class="ai-card-dark">
+            <h4>AI Guidance</h4>
+            <p class="ai-text">z</p>
+            z.<p class='ai-text' style='margin-top:0.5rem;'>z
+        </div>
+        z'I have read and understood this update.ÚAcknowledgez8Please confirm you have read and understood this update.Úacknowledged_by_parentr’   ÚacknowledgedzReport acknowledged. Thank you!zFailed to acknowledge: rÇ   )r)   r$   r%   r   r&   r(   r   rn   ro   rA   r?   r+   rF   rG   rH   rI   rJ   rK   r.   rO   rB   rM   rL   rf   ru   rÈ   rv   ÚcheckboxÚupdater¨   )r‡   rw   rÊ   rË   rÌ   rÍ   r   rR   r‚   ra   rÎ   rÏ   rf   r„   rÐ   rÀ   rÑ   rÁ   Ú
+guidance_bodyÚ
+red_flag_noterØ   s                        r   Úacknowledge_report_screenrÝ   ‡  s  € Ü„Nä×Ñ×/Ñ/€GßÜÔÜ
+ŠŒ
+ô ×Ñ×,Ñ,×3Ð3°°QÕ7×=Ñ=Ó?€GÜ')§z¢z²)Ó'<Ñ$€H˜*ß	ŠÜ
+9Š9Ð-×.Ò.ÜVÔÜHŠHŒJ÷ 
+÷ 
+ŠÜ
+ŠÐ*¨7¨)°6Ð:ÈdÕS÷ 
+ðäH‰HWÓß
+‰VC‹[ß
+‰RgÓ
+ß
+‰\‹^ß
+‰W‹Yð 	ð }‰}ˆ÷
+ Ü
+
+Š
+Ð$Ô%Ùð €JØ€Jð
+äH‰HZÓ ß
+‰VÐ+Ó
+,ß
+‰Rd˜:Õ&Ó
+'ß
+‰\‹^ß
+‰W‹Yð 	ð >>ˆ>Ø"Ÿ™¨Õ5ˆJØ&˜< q¨¯©¸Õ)DÐ(EÐFˆJô
+ ‡K‚K$z×:Ð: Z×%5Ñ%5Ó%7¸Õ%:Ð;Ð;KÐLÔMàh‰h| RÓ(€GðÝ%Ø
+×
+#Ñ
+# G§O¡O°C¸Ó$BÓ
+CˆØ$ R§[¡[°Ó%<Ð$=Ð>ˆ
+ô ‡K‚KÐ,¨]¨O¸4Ð@ÐTXÕYä‡K‚KØ
+@À×AdÐAdÈz×O_ÑO_ÓOaÐbcÕOdÐ@eð fVð 	Wàõð —(‘(˜=¨"Ó-€KØ—8‘8Ð1°2Ó6€LØ—‘˜ bÓ)×/Ð/¨R€Ià×OÐO <×OÐOÐ3O€MØ€MßØBˆ
+ä‡K‚Kð
+ ð !.˜ð /
+ßUbÐ=¸m¸_ÈDÑ
+QÐhjÐkð l	ð		ð õ	ô —;’;ÐHÓI€Lä	‡y‚y×ÒßÜJŠJÐQÖRð	
+8Ü—‘˜Ó!×(Ñ(Ø,¨dØ˜nð*ó ÷ ‘2d˜GÓ$§W¡W¤YÜ—
+’
+Ð<Ô=Ü˜Ô Ü—’–
+ñ  ÷k 
+ˆú÷ 
+ˆûô ô Ü
+ŠÐ(¨¨Ð,Ô-Ýûðûô, ô 
+Úð
+ûô ô Ø‹
+ðûô^ ô 
+8Ü—’Ð2°1°#Ð6×7Ò7ûð
+8úsu   Â+=Q5Ã:R	Ä AR Æ!A(S È
++S Ê;S! Ï5A<S5 Ñ5R	Ò	R	ÒSÒ(SÓSÓSÓSÓ!
+S2Ó1S2Ó5T$Ô TÔT$r>   rZ   rk   rj   )%Ú	streamlitr$   rf   r   r   ÚosÚdotenvr   Úsupabaser   Úset_page_configÚgetenvr   r   rO   ÚstopÚcache_resourcer   r+   r?   r%   r   r   r   r   r   r   r   r&   r)   r1   rT   rˆ   r±   rÓ   rÝ   r(   r   r   r   Ú<module>ræ      s  ðÛ ß $Û 	Ý Ý "á „
+à × Ò ˜i°6À*Õ Mð yŠy˜Ó(€ØyŠy˜Ó(€çŸ<Ø‡H‚HÐ
+AÔBØ‡G‚G„Ið ×Ññ5ó ð5ñ Ó€ð ‡‚ð y
+ðr õsyðx 
+×!Ñ!Ô!Ø#€B×ÑÔØB×$Ñ$Ô$Ø#€B×ÑÔØ˜×)Ñ)Ô)Ø$&€B×ÑÔ!Ø	×!Ñ!Ô!Ø€B×ÑÔØr×'Ñ'Ô'Ø"$€B×ÑÔØ˜×)Ñ)Ô)Ø$(€B×ÑÔ!Ø˜R×-Ñ-Ô-Ø(,€B×ÑÔ%õ!òòòVòtY/òzO6òfv
+òtm8ðb 
+×Ñ×Ñ€àˆ7„?Ù†NØ	ˆV„^Ù†MØ	ˆ_ÔÙÖØ	ˆ^ÔÙÖØ	Ð
+!Ô!ÙÖáˆWÔØ‡H‚H†Jr   
