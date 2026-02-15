@@ -639,12 +639,12 @@ def home_screen():
                     with img_col:
                         if photo_url:
                             st.markdown(
-                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin-bottom:200px;">',
+                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin-bottom:10px;">',
                                 unsafe_allow_html=True,
                             )
                         else:
                             st.markdown(
-                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;margin-bottom:200px"></div>',
+                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;margin-bottom:10px"></div>',
                                 unsafe_allow_html=True,
                             )
 
