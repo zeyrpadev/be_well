@@ -634,7 +634,7 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col, btn_col = st.columns([1.3, 2.5, 0.2])
+                    img_col, info_col, btn_col = st.columns([1.3, 2.5, 0.5])
 
                     with img_col:
                         if photo_url:
