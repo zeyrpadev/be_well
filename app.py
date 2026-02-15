@@ -126,8 +126,8 @@ st.markdown("""
     }
     .header-bell svg {width: 24px; height: 24px;}
 
-    /* Avatar logout button – circle style for primary buttons inside columns */
-    [data-testid="column"] .stButton > button[kind="primary"] {
+    /* Avatar logout button – circle style (columns NOT inside bordered card) */
+    [data-testid="stHorizontalBlock"]:not([data-testid="stVerticalBlockBorderWrapper"] *) [data-testid="column"]:last-child .stButton > button[kind="primary"] {
         border-radius: 50% !important;
         width: 42px !important;
         height: 42px !important;
@@ -139,7 +139,7 @@ st.markdown("""
         font-size: 1rem !important;
         background: var(--brand-light) !important;
     }
-    [data-testid="column"] .stButton > button[kind="primary"]:hover {
+    [data-testid="stHorizontalBlock"]:not([data-testid="stVerticalBlockBorderWrapper"] *) [data-testid="column"]:last-child .stButton > button[kind="primary"]:hover {
         background: var(--brand) !important;
     }
 
@@ -386,15 +386,17 @@ def do_logout():
     st.rerun()
 
 
-def render_header():
+def render_header(page_key=""):
     initial = (st.session_state.display_name or "U")[0].upper()
     bell_svg = '''<div class="header-bell"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>'''
     spacer, bell_col, avatar_col = st.columns([6, 1, 1])
     with bell_col:
         st.markdown(bell_svg, unsafe_allow_html=True)
     with avatar_col:
-        if st.button(initial, key="avatar_btn", type="primary"):
+        st.markdown('<div class="avatar-logout">', unsafe_allow_html=True)
+        if st.button(initial, key=f"avatar_{page_key}", type="primary"):
             do_logout()
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_back_nav(label, button_key):
@@ -548,7 +550,7 @@ def login_screen():
 def home_screen():
     require_auth()
 
-    render_header()
+    render_header("home")
 
     role = st.session_state.role
 
@@ -621,7 +623,7 @@ def home_screen():
             # Recent Cases inside a single bordered container (card)
             with st.container(border=True):
                 st.markdown(
-                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;'>"
+                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;'>"
                     "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"
                     " Recent Cases</div>",
                     unsafe_allow_html=True,
@@ -634,17 +636,17 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col, btn_col = st.columns([1.3, 2.5, 0.5])
+                    img_col, info_col, btn_col = st.columns([1.2, 2.5, 1])
 
                     with img_col:
                         if photo_url:
                             st.markdown(
-                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin-bottom:10px;">',
+                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;">',
                                 unsafe_allow_html=True,
                             )
                         else:
                             st.markdown(
-                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;margin-bottom:10px"></div>',
+                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;"></div>',
                                 unsafe_allow_html=True,
                             )
 
@@ -678,7 +680,7 @@ def symptom_entry_screen():
         navigate("home")
         st.rerun()
 
-    render_header()
+    render_header("symptom")
 
     render_back_nav("Symptom Entry", "back_symptom")
 
@@ -766,7 +768,7 @@ def symptom_entry_screen():
     selected_child = child_options[selected_name]
 
     st.markdown("<p style='font-weight:700;font-size:0.95rem;margin-bottom:2px;margin-top:1rem;'>Date</p>", unsafe_allow_html=True)
-    entry_date = st.date_input("Date", value=date.today(), label_visibility="collapsed")
+    entry_date = st.date_input("Date", value=date.today(), max_value=date.today(), label_visibility="collapsed")
 
     st.markdown("<p style='font-weight:700;font-size:0.95rem;margin-bottom:2px;margin-top:1rem;'>Symptom Description</p>", unsafe_allow_html=True)
     symptoms = st.text_area(
@@ -827,7 +829,7 @@ def case_details_screen():
         navigate("home")
         st.rerun()
 
-    render_header()
+    render_header("case")
 
     render_back_nav("Case Details", "back_case")
 
@@ -940,7 +942,7 @@ def acknowledge_report_screen():
         navigate("home")
         st.rerun()
 
-    render_header()
+    render_header("ack")
 
     render_back_nav("Acknowledge Report", "back_ack")
 
