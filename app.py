@@ -52,9 +52,9 @@ st.markdown("""
     /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
     .block-container {
-        max-width: 1100px;
-        padding: 1.5rem 2rem;
-        margin: auto;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 1rem 1rem;
     }
 
     /* Brand colours */
