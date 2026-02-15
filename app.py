@@ -89,8 +89,8 @@ st.markdown("""
         box-shadow: none !important;
         padding: 0.2rem 0 !important;
         text-align: left !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        font-size: 1.4rem !important;
         width: auto !important;
     }
     .stButton > button[kind="secondary"]:hover {
@@ -643,14 +643,10 @@ def symptom_entry_screen():
 
     render_header()
 
-    # Back navigation
-    col_back, col_title = st.columns([1, 8])
-    with col_back:
-        if st.button("<", key="back_symptom"):
-            navigate("home")
-            st.rerun()
-    with col_title:
-        st.markdown("<h2 style='margin:0;font-weight:800;font-size:1.4rem;'>Symptom Entry</h2>", unsafe_allow_html=True)
+    # Back navigation (secondary = text-style button)
+    if st.button("< Symptom Entry", key="back_symptom"):
+        navigate("home")
+        st.rerun()
 
     st.markdown(
         "<p style='color:#888;font-size:0.88rem;margin-top:-0.5rem;'>Describe what you're seeing</p>",
@@ -799,14 +795,10 @@ def case_details_screen():
 
     render_header()
 
-    # Back navigation
-    col_back, col_title = st.columns([1, 8])
-    with col_back:
-        if st.button("<", key="back_case"):
-            navigate("home")
-            st.rerun()
-    with col_title:
-        st.markdown("<h2 style='margin:0;font-weight:800;font-size:1.4rem;'>Case Details</h2>", unsafe_allow_html=True)
+    # Back navigation (secondary = text-style button)
+    if st.button("< Case Details", key="back_case"):
+        navigate("home")
+        st.rerun()
 
     # Fetch case
     try:
@@ -919,14 +911,10 @@ def acknowledge_report_screen():
 
     render_header()
 
-    # Back navigation
-    col_back, col_title = st.columns([1, 8])
-    with col_back:
-        if st.button("<", key="back_ack"):
-            navigate("home")
-            st.rerun()
-    with col_title:
-        st.markdown("<h2 style='margin:0;font-weight:800;font-size:1.4rem;'>Acknowledge Report</h2>", unsafe_allow_html=True)
+    # Back navigation (secondary = text-style button)
+    if st.button("< Acknowledge Report", key="back_ack"):
+        navigate("home")
+        st.rerun()
 
     # Fetch case
     try:
