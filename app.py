@@ -36,6 +36,16 @@ if st.session_state.get("access_token") and st.session_state.get("refresh_token"
 # ── Global CSS ──────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+    /* ── Montserrat font ── */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+    html, body, [class*="st-"], .stApp, .stMarkdown,
+    .stButton > button, .stTextInput input, .stTextArea textarea,
+    .stSelectbox, .stDateInput input, .stCheckbox label,
+    h1, h2, h3, h4, h5, h6, p, span, div, a, label {
+        font-family: 'Montserrat', sans-serif !important;
+    }
+
     /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
     .block-container {
@@ -106,19 +116,32 @@ st.markdown("""
         content: ""; flex: 1; height: 1px; background: #ddd;
     }
 
-    /* Header bar */
-    .header-bar {
-        display: flex; justify-content: flex-end; align-items: center;
-        gap: 12px; margin-bottom: 0.25rem;
+    /* Header bell icon (HTML) */
+    .header-bell {font-size: 1.3rem; color: #555; cursor: pointer; padding-top: 0.4rem;}
+
+    /* Popover avatar trigger – make it look like a circle avatar */
+    .stPopover > button {
+        background: var(--brand-light) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        padding: 0 !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: none !important;
     }
-    .header-bell {font-size: 1.3rem; color: #555; cursor: pointer;}
-    .header-avatar {
-        width: 42px; height: 42px; border-radius: 50%;
-        background: var(--brand-light); color: white;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 1rem;
-        overflow: hidden;
+    .stPopover > button:hover {
+        background: var(--brand) !important;
     }
+    /* Hide the popover caret/arrow icon */
+    .stPopover > button svg {display: none !important;}
+    .stPopover > button::after {display: none !important;}
 
     /* Links */
     .link-text {color: var(--brand); font-weight: 600; text-decoration: none;}
@@ -333,15 +356,16 @@ def do_logout():
 
 def render_header():
     initial = (st.session_state.display_name or "U")[0].upper()
-    st.markdown(
-        f"""
-        <div class="header-bar">
-            <div class="header-bell">🔔</div>
-            <div class="header-avatar">{initial}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # Right-aligned bell + avatar popover with logout
+    spacer, bell_col, avatar_col = st.columns([6, 1, 1])
+    with bell_col:
+        st.markdown("<div class='header-bell'>🔔</div>", unsafe_allow_html=True)
+    with avatar_col:
+        with st.popover(initial):
+            st.markdown(f"**{st.session_state.display_name or 'User'}**")
+            st.caption(st.session_state.role.title() if st.session_state.role else "")
+            if st.button("Logout", key="header_logout", type="primary"):
+                do_logout()
 
 
 def format_date_display(date_str):
@@ -578,11 +602,6 @@ def home_screen():
 
     except Exception as e:
         st.error(f"Failed to load cases: {e}")
-
-    # Logout at bottom
-    st.markdown("<div style='height:2rem;'></div>", unsafe_allow_html=True)
-    if st.button("Logout", type="primary"):
-        do_logout()
 
 
 # ── Screen 3 – Symptom Entry ──────────────────────────────────────────
