@@ -126,22 +126,6 @@ st.markdown("""
     }
     .header-bell svg {width: 24px; height: 24px;}
 
-    /* Avatar logout button – circle style (columns NOT inside bordered card) */
-    [data-testid="stHorizontalBlock"]:not([data-testid="stVerticalBlockBorderWrapper"] *) [data-testid="column"]:last-child .stButton > button[kind="primary"] {
-        border-radius: 50% !important;
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px !important;
-        max-width: 42px !important;
-        min-height: 42px !important;
-        padding: 0 !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-        background: var(--brand-light) !important;
-    }
-    [data-testid="stHorizontalBlock"]:not([data-testid="stVerticalBlockBorderWrapper"] *) [data-testid="column"]:last-child .stButton > button[kind="primary"]:hover {
-        background: var(--brand) !important;
-    }
 
     /* ── File uploader – smaller drag-and-drop text ── */
     .stFileUploader section {
@@ -393,10 +377,13 @@ def render_header(page_key=""):
     with bell_col:
         st.markdown(bell_svg, unsafe_allow_html=True)
     with avatar_col:
-        st.markdown('<div class="avatar-logout">', unsafe_allow_html=True)
-        if st.button(initial, key=f"avatar_{page_key}", type="primary"):
-            do_logout()
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown(
+            f"""<div style="width:42px;height:42px;border-radius:50%;background:#52AB98;
+            display:flex;align-items:center;justify-content:center;
+            color:white;font-weight:700;font-size:1rem;font-family:'Montserrat',sans-serif;">
+            {initial}</div>""",
+            unsafe_allow_html=True,
+        )
 
 
 def render_back_nav(label, button_key):
