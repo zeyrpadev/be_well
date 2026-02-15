@@ -52,8 +52,9 @@ st.markdown("""
     /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
     .block-container {
-        max-width: 420px !important;
-        padding: 1rem 1.5rem !important;
+        max-width: 420px;
+        padding: 1rem 1.5rem;
+        margin: auto;
     }
 
     /* Brand colours */
