@@ -7,7 +7,7 @@ from supabase import create_client
 
 load_dotenv()
 
-st.set_page_config(page_title="Be Well", page_icon="💚", layout="centered")
+st.set_page_config(page_title="Be Well", page_icon="💚", layout="wide")
 
 # ── Supabase client ────────────────────────────────────────────────────
 SUPABASE_URL = os.getenv("SUPABASE_URL")
