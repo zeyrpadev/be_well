@@ -633,7 +633,7 @@ def home_screen():
 
                     with info_col:
                         st.markdown(
-                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;'>{display_date}</div>",
+                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:1px;'>{display_date}</div>",
                             unsafe_allow_html=True,
                         )
                         if st.button(child_name, key=f"case_{case_id}"):
@@ -644,7 +644,7 @@ def home_screen():
                                 navigate("case_details")
                             st.rerun()
                         st.markdown(
-                            f"<div style='font-size:0.85rem;color:#555;margin-top:-0.6rem;'>{symptom}</div>",
+                            f"<div style='font-size:0.85rem;color:#555;'>{symptom}</div>",
                             unsafe_allow_html=True,
                         )
 
