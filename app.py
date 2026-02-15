@@ -298,6 +298,13 @@ st.markdown("""
         margin: 0 !important;
     }
 
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 1rem;
+        }
+    }
+
+
     /* Open icon button inside recent-cases card */
     [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
         background: transparent !important;
