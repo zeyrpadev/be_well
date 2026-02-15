@@ -313,24 +313,16 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* Case entry row inside the recent-cases card */
-    .case-entry-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 0.3rem 0;
+    /* Case entry name button inside the recent-cases card – tighter spacing */
+    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        height: auto !important;
+        min-height: 0 !important;
     }
-    .case-entry-avatar {
-        width: 52px; height: 52px; border-radius: 50%;
-        background: #e0e0e0; flex-shrink: 0;
-        overflow: hidden;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .case-entry-avatar img {
-        width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
-    }
-    .case-entry-date {font-size: 0.72rem; color: var(--brand); font-weight: 500;}
-    .case-entry-symptom {font-size: 0.82rem; color: #555; margin-top: 1px;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -612,8 +604,9 @@ def home_screen():
             # Recent Cases inside a single bordered container (card)
             with st.container(border=True):
                 st.markdown(
-                    "<div style='font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:6px;'>"
-                    "🕐 Recent Cases</div>",
+                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;'>"
+                    "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"
+                    " Recent Cases</div>",
                     unsafe_allow_html=True,
                 )
 
@@ -622,41 +615,38 @@ def home_screen():
                     display_date = format_date_display(case.get("symptom_date", ""))
                     symptom = case.get("symptom_description", "")
                     photo_url = case.get("photo_url", "")
-
-                    # Avatar
-                    if photo_url:
-                        avatar_html = f'<img src="{photo_url}" alt="">'
-                    else:
-                        child_initial = (child_name[0] if child_name else "?").upper()
-                        avatar_html = f'<span style="font-weight:700;color:#888;font-size:1.1rem;">{child_initial}</span>'
-
-                    # Case info row (date + symptom as HTML, name as clickable button)
-                    st.markdown(
-                        f"""
-                        <div class="case-entry-row">
-                            <div class="case-entry-avatar">{avatar_html}</div>
-                            <div>
-                                <div class="case-entry-date">{display_date}</div>
-                            </div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-                    # Child name as the clickable element (secondary = text style)
                     case_id = case["id"]
-                    if st.button(child_name, key=f"case_{case_id}"):
-                        st.session_state.selected_case_id = case_id
-                        if role == "parent":
-                            navigate("acknowledge_report")
-                        else:
-                            navigate("case_details")
-                        st.rerun()
 
-                    st.markdown(
-                        f"<div class='case-entry-symptom' style='margin-top:-0.5rem;margin-bottom:0.5rem;'>{symptom}</div>",
-                        unsafe_allow_html=True,
-                    )
+                    img_col, info_col = st.columns([1, 2.5])
+
+                    with img_col:
+                        if photo_url:
+                            st.markdown(
+                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;">',
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            st.markdown(
+                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;"></div>',
+                                unsafe_allow_html=True,
+                            )
+
+                    with info_col:
+                        st.markdown(
+                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:1px;'>{display_date}</div>",
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(child_name, key=f"case_{case_id}"):
+                            st.session_state.selected_case_id = case_id
+                            if role == "parent":
+                                navigate("acknowledge_report")
+                            else:
+                                navigate("case_details")
+                            st.rerun()
+                        st.markdown(
+                            f"<div style='font-size:0.85rem;color:#555;margin-top:-0.6rem;'>{symptom}</div>",
+                            unsafe_allow_html=True,
+                        )
 
     except Exception as e:
         st.error(f"Failed to load cases: {e}")
