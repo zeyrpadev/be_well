@@ -610,7 +610,7 @@ def home_screen():
             # Recent Cases inside a single bordered container (card)
             with st.container(border=True):
                 st.markdown(
-                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;'>"
+                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;'>"
                     "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"
                     " Recent Cases</div>",
                     unsafe_allow_html=True,
@@ -623,17 +623,17 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col, btn_col = st.columns([1.2, 2.5, 1])
+                    img_col, info_col, btn_col = st.columns([1.2, 2.5, 0.5])
 
                     with img_col:
                         if photo_url:
                             st.markdown(
-                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;">',
+                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin-bottom:10px;">',
                                 unsafe_allow_html=True,
                             )
                         else:
                             st.markdown(
-                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;"></div>',
+                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;margin-bottom:10px;"></div>',
                                 unsafe_allow_html=True,
                             )
 
