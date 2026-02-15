@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import date, timedelta
+from datetime import date, datetime
 import os
 from dotenv import load_dotenv
 from supabase import create_client
@@ -51,6 +51,7 @@ st.markdown("""
         --card-bg: #FFFFFF;
         --text-dark: #1E1E1E;
         --text-muted: #888888;
+        --red: #D32F2F;
     }
 
     /* Teal primary buttons */
@@ -88,34 +89,69 @@ st.markdown("""
         content: ""; flex: 1; height: 1px; background: #ddd;
     }
 
-    /* Case card */
+    /* Case card (used for clickable case entries) */
     .case-card {
         background: var(--card-bg);
         border-radius: 14px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 0.75rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: box-shadow 0.2s;
     }
-    .case-card .date {font-size: 0.75rem; color: var(--text-muted);}
-    .case-card .child {font-weight: 700; font-size: 1rem; margin: 2px 0;}
-    .case-card .symptom {font-size: 0.85rem; color: #555;}
+    .case-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    .case-card .case-avatar {
+        width: 56px; height: 56px; border-radius: 50%;
+        background: #e0e0e0;
+        flex-shrink: 0;
+        overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .case-card .case-avatar img {
+        width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    }
+    .case-card .case-info {flex: 1;}
+    .case-card .case-date {font-size: 0.72rem; color: var(--brand); font-weight: 500;}
+    .case-card .case-child {font-weight: 700; font-size: 0.95rem; margin: 1px 0; color: var(--text-dark);}
+    .case-card .case-symptom {font-size: 0.82rem; color: #555;}
+
+    /* Recent cases container */
+    .recent-cases-box {
+        background: var(--card-bg);
+        border-radius: 18px;
+        padding: 1rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .recent-cases-title {
+        font-size: 0.9rem; font-weight: 600; color: var(--text-dark);
+        display: flex; align-items: center; gap: 6px;
+        margin-bottom: 0.75rem;
+    }
 
     /* Header bar */
     .header-bar {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 0.5rem;
+        display: flex; justify-content: flex-end; align-items: center;
+        gap: 12px; margin-bottom: 0.25rem;
     }
-    .header-bar .icons {display: flex; gap: 12px; align-items: center;}
-    .avatar {
-        width: 36px; height: 36px; border-radius: 50%;
+    .header-bell {font-size: 1.3rem; color: #555; cursor: pointer;}
+    .header-avatar {
+        width: 42px; height: 42px; border-radius: 50%;
         background: var(--brand-light); color: white;
         display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 0.9rem;
+        font-weight: 700; font-size: 1rem;
+        overflow: hidden;
+    }
+    .header-avatar img {
+        width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
     }
 
-    /* Back button */
+    /* Back link */
     .back-link {
-        font-size: 1.05rem; font-weight: 600; color: var(--brand);
+        font-size: 1.05rem; font-weight: 600; color: var(--text-dark);
         cursor: pointer; text-decoration: none;
     }
 
@@ -140,15 +176,17 @@ st.markdown("""
         font-size: 0.88rem;
         line-height: 1.4;
         margin: 0.5rem 0 1rem 0;
+        display: inline-block;
     }
 
-    /* AI Guidance card */
+    /* AI Guidance card (light - carer view) */
     .ai-card {
         background: #F0F4F5;
         border-radius: 14px;
         padding: 1rem 1.2rem;
         margin: 1rem 0;
     }
+    /* AI Guidance card (dark - parent view) */
     .ai-card-dark {
         background: var(--brand);
         color: white;
@@ -187,7 +225,7 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     .red-flag-title {
-        color: #D32F2F;
+        color: var(--red);
         font-weight: 700;
         font-size: 0.95rem;
         margin-bottom: 0.5rem;
@@ -195,11 +233,11 @@ st.markdown("""
     .red-flag-item {
         display: flex; align-items: center; gap: 8px;
         font-size: 0.88rem; color: #333;
-        padding: 4px 0;
+        padding: 4px 0; font-weight: 600;
     }
     .red-dot {
-        width: 20px; height: 20px; border-radius: 50%;
-        background: #D32F2F; color: white;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: var(--red); color: white;
         display: inline-flex; align-items: center; justify-content: center;
         font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
     }
@@ -211,12 +249,79 @@ st.markdown("""
         margin: -0.3rem 0 1rem 0;
     }
 
-    /* Parent update description */
+    /* Parent update card */
+    .update-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 1.2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        margin: 1rem 0;
+    }
+    .update-card h4 {margin: 0 0 4px 0; font-size: 1.05rem;}
+    .update-card .update-time {
+        font-size: 0.78rem; color: var(--text-muted);
+        border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px;
+    }
     .update-desc {
         font-size: 0.88rem;
         color: #555;
         line-height: 1.5;
+        margin: 0.5rem 0 0 0;
+    }
+
+    /* Symptom section card */
+    .symptom-section-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 1.2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         margin: 0.5rem 0 1rem 0;
+    }
+
+    /* Upload photo box */
+    .upload-box {
+        width: 80px; height: 80px;
+        border: 2px dashed #ccc;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem; color: #999; cursor: pointer;
+        background: #fafafa;
+    }
+
+    /* Page title */
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin: 0.25rem 0 0.25rem 0;
+    }
+
+    /* Carer home title */
+    .carer-home-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    /* Disclaimer text */
+    .disclaimer {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        text-align: center;
+        margin-top: 2rem;
+        line-height: 1.4;
+    }
+
+    /* Hide case button styling - make buttons look like invisible overlays */
+    .case-btn-wrapper .stButton > button {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        opacity: 0 !important;
+        margin: 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -266,25 +371,68 @@ def do_logout():
     st.rerun()
 
 
+def render_header():
+    """Render the notification bell + avatar header (top-right aligned)."""
+    initial = (st.session_state.display_name or "U")[0].upper()
+    st.markdown(
+        f"""
+        <div class="header-bar">
+            <div class="header-bell">🔔</div>
+            <div class="header-avatar">{initial}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def format_date_display(date_str):
+    """Format a date string for display (e.g., '12 January 2026')."""
+    try:
+        dt = datetime.fromisoformat(date_str)
+        return dt.strftime("%d %B %Y")
+    except Exception:
+        return date_str or ""
+
+
+def format_time_display(created_at):
+    """Format created_at timestamp to 'Submitted HH:MM AM/PM'."""
+    try:
+        dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        return f"Submitted {dt.strftime('%I:%M %p')}"
+    except Exception:
+        return ""
+
+
 # ── Screen 1 – Login ───────────────────────────────────────────────────
 def login_screen():
-    st.markdown("<div style='text-align:center;margin-top:2rem;'>", unsafe_allow_html=True)
+    # Top spacer
+    st.markdown("<div style='height:3rem;'></div>", unsafe_allow_html=True)
+
+    # Title
     st.markdown(
-        "<span style='font-size:2.4rem;font-weight:800;color:#2B6777;'>Be</span>"
-        "<span style='font-size:2.4rem;font-weight:800;color:#52AB98;'>Well</span>",
+        "<h2 style='text-align:center;font-weight:800;margin-bottom:0.2rem;'>Welcome Back!</h2>",
         unsafe_allow_html=True,
     )
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("## Welcome Back!")
     st.markdown(
-        "<p style='color:#888;margin-top:-0.8rem;'>Log in to continue caring for your little ones.</p>",
+        "<p style='text-align:center;color:#888;margin-top:0;font-size:0.9rem;'>Sign in to your account to access</p>",
         unsafe_allow_html=True,
     )
 
-    email = st.text_input("Email", placeholder="you@example.com")
-    password = st.text_input("Password", type="password", placeholder="Enter your password")
+    st.markdown("<div style='height:1.5rem;'></div>", unsafe_allow_html=True)
 
+    # Email field
+    st.markdown(
+        "<p style='font-size:0.85rem;font-weight:500;margin-bottom:2px;'>Email or Phone number</p>",
+        unsafe_allow_html=True,
+    )
+    email = st.text_input("Email", placeholder="hello@gmail.com", label_visibility="collapsed")
+
+    # Password field
+    password = st.text_input("Password", type="password", placeholder="Enter your password", label_visibility="collapsed")
+
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+
+    # Continue button
     if st.button("Continue"):
         if not email or not password:
             st.warning("Please enter both email and password.")
@@ -298,7 +446,7 @@ def login_screen():
                 st.session_state.access_token = session.access_token
                 st.session_state.refresh_token = session.refresh_token
 
-                # Fetch user profile from users table
+                # Fetch user profile
                 profile = (
                     sb.table("users")
                     .select("display_name, role, centre_ids")
@@ -322,37 +470,39 @@ def login_screen():
                 else:
                     st.error(f"Login failed: {error_msg}")
 
+    # Forgot password & sign up
     st.markdown(
-        "<p style='text-align:right;margin-top:-0.5rem;'>"
-        "<a href='#' class='link-text' style='font-size:0.85rem;'>Forgot Password?</a></p>",
+        "<p style='text-align:center;margin-top:0.5rem;font-size:0.85rem;'>"
+        "<a href='#' class='link-text'>Forgot Password?</a></p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<p class='muted' style='margin-top:0.25rem;'>"
+        "Don't have an account? <a href='#' class='link-text'>Sign up</a></p>",
         unsafe_allow_html=True,
     )
 
+    # Or divider
     st.markdown("<div class='or-divider'>Or</div>", unsafe_allow_html=True)
 
+    # Social login buttons
     st.markdown(
         """
         <div class="social-row">
-            <div class="social-btn">🍎&nbsp; Apple</div>
+            <div class="social-btn">🍎</div>
             <div class="social-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                     width="18" style="vertical-align:middle;"> Google
+                     width="20" style="vertical-align:middle;">
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    # Disclaimer
     st.markdown(
-        "<p class='muted' style='margin-top:1rem;'>"
-        "Don't have an account? <a href='#' class='link-text'>Sign up</a></p>",
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        "<p class='muted' style='margin-top:2rem;font-size:0.72rem;'>"
-        "By continuing you agree to our <a href='#' class='link-text'>Terms of Service</a> "
-        "and <a href='#' class='link-text'>Privacy Policy</a>.</p>",
+        "<p class='disclaimer'>"
+        "This guidance is not a medical diagnosis and<br>replace professional medical advice</p>",
         unsafe_allow_html=True,
     )
 
@@ -361,113 +511,165 @@ def login_screen():
 def home_screen():
     require_auth()
 
-    initial = (st.session_state.display_name or "C")[0].upper()
+    render_header()
 
-    # Header with logout
-    col1, col2, col3 = st.columns([6, 1, 1])
-    with col1:
-        st.markdown(
-            "<div style='font-size:1.4rem;font-weight:800;color:#2B6777;'>BeWell</div>",
-            unsafe_allow_html=True,
-        )
-    with col2:
-        st.markdown(
-            f"<div class='avatar'>{initial}</div>",
-            unsafe_allow_html=True,
-        )
-    with col3:
-        if st.button("↩", help="Logout"):
-            do_logout()
+    role = st.session_state.role
 
-    st.markdown("### Carer Home")
+    # Title
+    if role == "parent":
+        st.markdown("<div class='carer-home-title'>Parent Home</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div class='carer-home-title'>Carer Home</div>", unsafe_allow_html=True)
 
-    if st.button("＋  New Case"):
-        navigate("symptom_entry")
-        st.rerun()
+    # New Case button (only for non-parents)
+    if role != "parent":
+        if st.button("New Case  ➕"):
+            navigate("symptom_entry")
+            st.rerun()
 
-    st.markdown("#### Recent Cases")
+    st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
 
-    # Fetch cases from Supabase
+    # Fetch cases
     try:
         user_id = st.session_state.user_id
-        cases_res = (
-            sb.table("cases")
-            .select("id, child_id, symptom_date, symptom_description, status, created_at")
-            .eq("reported_by", user_id)
-            .order("created_at", desc=True)
-            .limit(20)
-            .execute()
-        )
-        cases = cases_res.data or []
 
-        if not cases:
-            st.info("No cases yet. Tap **New Case** to get started.")
-        else:
-            # Collect child IDs to fetch names
-            child_ids = list({c["child_id"] for c in cases if c.get("child_id")})
-            child_map = {}
+        if role == "parent":
+            # Parents see cases for their children
+            # First get children linked to this parent
+            children_res = (
+                sb.table("children")
+                .select("id, first_name, last_name")
+                .contains("parent_ids", [user_id])
+                .execute()
+            )
+            parent_children = children_res.data or []
+            child_ids = [ch["id"] for ch in parent_children]
+            child_map = {ch["id"]: f"{ch['first_name']} {ch['last_name']}" for ch in parent_children}
+
             if child_ids:
+                cases_res = (
+                    sb.table("cases")
+                    .select("id, child_id, symptom_date, symptom_description, status, created_at, photo_url")
+                    .in_("child_id", child_ids)
+                    .order("created_at", desc=True)
+                    .limit(20)
+                    .execute()
+                )
+                cases = cases_res.data or []
+            else:
+                cases = []
+        else:
+            # Carers see cases they reported
+            cases_res = (
+                sb.table("cases")
+                .select("id, child_id, symptom_date, symptom_description, status, created_at, photo_url")
+                .eq("reported_by", user_id)
+                .order("created_at", desc=True)
+                .limit(20)
+                .execute()
+            )
+            cases = cases_res.data or []
+
+            # Fetch child names
+            child_ids_set = list({c["child_id"] for c in cases if c.get("child_id")})
+            child_map = {}
+            if child_ids_set:
                 children_res = (
                     sb.table("children")
                     .select("id, first_name, last_name")
-                    .in_("id", child_ids)
+                    .in_("id", child_ids_set)
                     .execute()
                 )
                 for ch in children_res.data or []:
                     child_map[ch["id"]] = f"{ch['first_name']} {ch['last_name']}"
 
+        if not cases:
+            st.info("No cases yet. Tap **New Case** to get started." if role != "parent" else "No cases to review.")
+        else:
+            # Recent Cases section
+            st.markdown(
+                '<div class="recent-cases-box">'
+                '<div class="recent-cases-title">🕐 Recent Cases</div>',
+                unsafe_allow_html=True,
+            )
+
             for case in cases:
                 child_name = child_map.get(case.get("child_id"), "Unknown Child")
-                case_date = case.get("symptom_date", "")
-                try:
-                    from datetime import datetime
-                    dt = datetime.fromisoformat(case_date)
-                    display_date = dt.strftime("%d %b %Y")
-                except Exception:
-                    display_date = case_date or ""
+                display_date = format_date_display(case.get("symptom_date", ""))
                 symptom = case.get("symptom_description", "")
+                photo_url = case.get("photo_url", "")
+
+                # Avatar HTML
+                if photo_url:
+                    avatar_html = f'<img src="{photo_url}" alt="">'
+                else:
+                    child_initial = (child_name[0] if child_name else "?").upper()
+                    avatar_html = f'<span style="font-weight:700;color:#888;font-size:1.2rem;">{child_initial}</span>'
 
                 st.markdown(
                     f"""
                     <div class="case-card">
-                        <div class="date">{display_date}</div>
-                        <div class="child">{child_name}</div>
-                        <div class="symptom">{symptom}</div>
+                        <div class="case-avatar">{avatar_html}</div>
+                        <div class="case-info">
+                            <div class="case-date">{display_date}</div>
+                            <div class="case-child">{child_name}</div>
+                            <div class="case-symptom">{symptom}</div>
+                        </div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
+                # Clickable button (styled to blend into the card)
                 case_id = case["id"]
-                if st.button("View details", key=f"case_{case_id}"):
+                if st.button(f"Open {child_name}", key=f"case_{case_id}", type="secondary"):
                     st.session_state.selected_case_id = case_id
-                    role = st.session_state.role
                     if role == "parent":
                         navigate("acknowledge_report")
                     else:
                         navigate("case_details")
                     st.rerun()
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
     except Exception as e:
         st.error(f"Failed to load cases: {e}")
+
+    # Logout at bottom
+    st.markdown("<div style='height:2rem;'></div>", unsafe_allow_html=True)
+    if st.button("Logout"):
+        do_logout()
 
 
 # ── Screen 3 – Symptom Entry ──────────────────────────────────────────
 def symptom_entry_screen():
     require_auth()
 
-    if st.button("← Symptom Entry"):
+    # Block parent access
+    if st.session_state.role == "parent":
         navigate("home")
         st.rerun()
 
-    st.markdown("### New Symptom Entry")
+    render_header()
+
+    # Back + title
+    if st.button("‹ Symptom Entry"):
+        navigate("home")
+        st.rerun()
+
+    st.markdown(
+        "<p style='color:#888;font-size:0.88rem;margin-top:-0.5rem;'>Describe what you're seeing</p>",
+        unsafe_allow_html=True,
+    )
 
     # Fetch children assigned to this user
     user_id = st.session_state.user_id
     children = []
+    parent_map = {}
+
     try:
-        # Try array-contains filter first (carer_ids/parent_ids are UUID arrays)
         children_res = (
             sb.table("children")
-            .select("id, first_name, last_name, centre_id")
+            .select("id, first_name, last_name, centre_id, parent_ids")
             .or_(f"carer_ids.cs.{{{user_id}}},parent_ids.cs.{{{user_id}}}")
             .execute()
         )
@@ -476,13 +678,12 @@ def symptom_entry_screen():
         pass
 
     if not children:
-        # Fallback: try fetching children by user's centre_ids
         try:
             centre_ids = st.session_state.centre_ids or []
             if centre_ids:
                 children_res = (
                     sb.table("children")
-                    .select("id, first_name, last_name, centre_id")
+                    .select("id, first_name, last_name, centre_id, parent_ids")
                     .in_("centre_id", centre_ids)
                     .execute()
                 )
@@ -491,11 +692,10 @@ def symptom_entry_screen():
             pass
 
     if not children:
-        # Last fallback: fetch all children visible to this user (RLS will filter)
         try:
             children_res = (
                 sb.table("children")
-                .select("id, first_name, last_name, centre_id")
+                .select("id, first_name, last_name, centre_id, parent_ids")
                 .execute()
             )
             children = children_res.data or []
@@ -506,21 +706,67 @@ def symptom_entry_screen():
         st.warning("No children assigned to you.")
         return
 
-    child_options = {
-        f"{ch['first_name']} {ch['last_name']}": ch for ch in children
-    }
-    selected_name = st.selectbox("Child Name", list(child_options.keys()))
+    # Fetch parent names for display format "Parent Name - Child Name"
+    all_parent_ids = set()
+    for ch in children:
+        for pid in (ch.get("parent_ids") or []):
+            all_parent_ids.add(pid)
+
+    if all_parent_ids:
+        try:
+            parents_res = (
+                sb.table("users")
+                .select("id, display_name")
+                .in_("id", list(all_parent_ids))
+                .execute()
+            )
+            for p in parents_res.data or []:
+                parent_map[p["id"]] = p["display_name"]
+        except Exception:
+            pass
+
+    # Build dropdown options: "Parent Name - Child Name"
+    child_options = {}
+    for ch in children:
+        child_full = f"{ch['first_name']} {ch['last_name']}"
+        parent_ids = ch.get("parent_ids") or []
+        if parent_ids and parent_ids[0] in parent_map:
+            label = f"{parent_map[parent_ids[0]]} - {child_full}"
+        else:
+            label = child_full
+        child_options[label] = ch
+
+    st.markdown(
+        "<p style='font-weight:700;font-size:0.95rem;margin-bottom:2px;'>Name Child</p>",
+        unsafe_allow_html=True,
+    )
+    selected_name = st.selectbox("Name Child", list(child_options.keys()), label_visibility="collapsed")
     selected_child = child_options[selected_name]
 
-    entry_date = st.date_input("Date", value=date.today())
+    st.markdown(
+        "<p style='font-weight:700;font-size:0.95rem;margin-bottom:2px;margin-top:1rem;'>Date</p>",
+        unsafe_allow_html=True,
+    )
+    entry_date = st.date_input("Date", value=date.today(), label_visibility="collapsed")
 
+    st.markdown(
+        "<p style='font-weight:700;font-size:0.95rem;margin-bottom:2px;margin-top:1rem;'>Symptom Description</p>",
+        unsafe_allow_html=True,
+    )
     symptoms = st.text_area(
         "Symptom Description",
-        placeholder="Describe the symptoms you have observed…",
-        height=120,
+        placeholder="e.g Darcy has a cough and seens tired.",
+        height=100,
+        label_visibility="collapsed",
     )
 
-    photo = st.file_uploader("Upload Photo (optional)", type=["png", "jpg", "jpeg"])
+    st.markdown(
+        "<p style='font-weight:700;font-size:0.95rem;margin-bottom:2px;margin-top:1rem;'>Upload Photo (optional)</p>",
+        unsafe_allow_html=True,
+    )
+    photo = st.file_uploader("Upload Photo", type=["png", "jpg", "jpeg"], label_visibility="collapsed")
+
+    st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
 
     if st.button("Submit"):
         if not symptoms.strip():
@@ -529,7 +775,6 @@ def symptom_entry_screen():
             try:
                 photo_url = None
                 if photo:
-                    # Upload photo to Supabase Storage
                     try:
                         file_path = f"cases/{user_id}/{entry_date.isoformat()}_{photo.name}"
                         sb.storage.from_("case-photos").upload(
@@ -539,7 +784,6 @@ def symptom_entry_screen():
                         )
                         photo_url = sb.storage.from_("case-photos").get_public_url(file_path)
                     except Exception:
-                        # Storage may not be configured; continue without photo
                         pass
 
                 case_data = {
@@ -554,7 +798,7 @@ def symptom_entry_screen():
                     case_data["photo_url"] = photo_url
 
                 sb.table("cases").insert(case_data).execute()
-                st.success(f"Case for {selected_name} saved!")
+                st.success(f"Case for {selected_child['first_name']} {selected_child['last_name']} saved!")
                 navigate("home")
                 st.rerun()
             except Exception as e:
@@ -570,15 +814,12 @@ def case_details_screen():
         navigate("home")
         st.rerun()
 
-    # Header
-    initial = (st.session_state.display_name or "C")[0].upper()
-    col_back, col_spacer, col_avatar = st.columns([6, 2, 1])
-    with col_back:
-        if st.button("← Case Details"):
-            navigate("home")
-            st.rerun()
-    with col_avatar:
-        st.markdown(f"<div class='avatar'>{initial}</div>", unsafe_allow_html=True)
+    render_header()
+
+    # Back + title
+    if st.button("‹ Case Details"):
+        navigate("home")
+        st.rerun()
 
     # Fetch case
     try:
@@ -616,21 +857,18 @@ def case_details_screen():
         pass
 
     # Submitted time
-    created = case.get("created_at", "")
-    try:
-        from datetime import datetime
-        dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
-        submitted_str = f"Submitted {dt.strftime('%I:%M %p')}"
-    except Exception:
-        submitted_str = ""
-
+    submitted_str = format_time_display(case.get("created_at", ""))
     st.markdown(f"<p class='submitted-meta'>{submitted_str}</p>", unsafe_allow_html=True)
 
-    # Symptoms section
-    st.markdown(f"**{first_name or child_name.split()[0]}'s Symptoms**")
+    # Symptoms section in card
     symptom_text = case.get("symptom_description", "")
     st.markdown(
-        f"<div class='symptom-bubble'>{symptom_text}</div>",
+        f"""
+        <div class="symptom-section-card">
+            <p style="font-weight:700;font-size:1.05rem;margin:0 0 0.5rem 0;">{first_name or child_name.split()[0]}'s Symptoms</p>
+            <div class="symptom-bubble">{symptom_text}</div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -641,14 +879,14 @@ def case_details_screen():
     red_flags = case.get("red_flags", []) or []
 
     if ai_recommendation or ai_guidance:
+        category_html = f'<span class="cat-tag">{ai_category}</span>' if ai_category else "—"
         st.markdown(
             f"""
             <div class="ai-card">
                 <h4>AI Guidance</h4>
-                <p style="margin:0;"><span class="ai-label">Recommended :</span> {ai_recommendation or "—"}</p>
+                <p style="margin:0;"><span class="ai-label">Recommended :</span>&nbsp; {ai_recommendation or "—"}</p>
                 <p style="margin:6px 0;">
-                    <span class="ai-label">Category :</span>
-                    {"<span class='cat-tag'>" + ai_category + "</span>" if ai_category else "—"}
+                    <span class="ai-label">Category :</span>&nbsp; {category_html}
                 </p>
                 <p class="ai-text">{ai_guidance}</p>
             </div>
@@ -669,7 +907,7 @@ def case_details_screen():
     # Red Flags
     if red_flags:
         flags_html = "".join(
-            f'<div class="red-flag-item"><span class="red-dot">✕</span> {flag}</div>'
+            f'<div class="red-flag-item"><span class="red-dot">✓</span> {flag}</div>'
             for flag in red_flags
         )
         st.markdown(
@@ -692,15 +930,12 @@ def acknowledge_report_screen():
         navigate("home")
         st.rerun()
 
-    # Header
-    initial = (st.session_state.display_name or "P")[0].upper()
-    col_back, col_spacer, col_avatar = st.columns([6, 2, 1])
-    with col_back:
-        if st.button("← Acknowledge Report"):
-            navigate("home")
-            st.rerun()
-    with col_avatar:
-        st.markdown(f"<div class='avatar'>{initial}</div>", unsafe_allow_html=True)
+    render_header()
+
+    # Back + title
+    if st.button("‹ Acknowledge Report"):
+        navigate("home")
+        st.rerun()
 
     # Fetch case
     try:
@@ -737,22 +972,21 @@ def acknowledge_report_screen():
     except Exception:
         pass
 
-    # Title & meta
-    st.markdown(f"### {first_name or child_name.split()[0]}'s Health Update")
-
+    # Health Update card
     created = case.get("created_at", "")
-    try:
-        from datetime import datetime
-        dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
-        submitted_str = f"Submitted {dt.strftime('%I:%M %p')}"
-    except Exception:
-        submitted_str = ""
-
-    st.markdown(f"<p class='submitted-meta'>{submitted_str}</p>", unsafe_allow_html=True)
+    submitted_str = format_time_display(created)
 
     st.markdown(
-        f"<p class='update-desc'>Guidance has been provided for {first_name or child_name.split()[0]}'s "
-        f"symptoms. Please review the information and let us know you've seen it.</p>",
+        f"""
+        <div class="update-card">
+            <h4>{first_name or child_name.split()[0]}'s Health Update</h4>
+            <div class="update-time">{submitted_str}</div>
+            <p class="update-desc">
+                Guidance has been provided for {first_name or child_name.split()[0]}'s
+                symptoms. Please review the information and let us know you've seen it
+            </p>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -764,7 +998,7 @@ def acknowledge_report_screen():
     guidance_body = ai_guidance or symptom_text or "No guidance available yet."
     red_flag_note = ""
     if red_flags:
-        red_flag_note = f"Watch for any <a href='#'>Red Flags</a>."
+        red_flag_note = "Watch for any <a href='#'>Red Flags</a>."
 
     st.markdown(
         f"""
@@ -777,11 +1011,11 @@ def acknowledge_report_screen():
         unsafe_allow_html=True,
     )
 
-    # Acknowledge checkbox + button
-    acknowledged = st.checkbox("I have read and understood this update.")
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
 
+    # Acknowledge button
     if st.button("Acknowledge"):
-        if not acknowledged:
+        if not st.session_state.get("ack_checked"):
             st.warning("Please confirm you have read and understood this update.")
         else:
             try:
@@ -794,6 +1028,10 @@ def acknowledge_report_screen():
                 st.rerun()
             except Exception as e:
                 st.error(f"Failed to acknowledge: {e}")
+
+    # Checkbox
+    acknowledged = st.checkbox("I have read and understood this update.")
+    st.session_state["ack_checked"] = acknowledged
 
 
 # ── Router ─────────────────────────────────────────────────────────────
