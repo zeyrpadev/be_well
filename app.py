@@ -39,10 +39,12 @@ st.markdown("""
     /* ── Montserrat font ── */
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
-    html, body, [class*="st-"], .stApp, .stMarkdown,
+    .stApp, .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2,
+    .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6,
     .stButton > button, .stTextInput input, .stTextArea textarea,
     .stSelectbox, .stDateInput input, .stCheckbox label,
-    h1, h2, h3, h4, h5, h6, p, span, div, a, label {
+    .stFileUploader, .stAlert, .block-container,
+    .stPopover > button {
         font-family: 'Montserrat', sans-serif !important;
     }
 
@@ -88,7 +90,7 @@ st.markdown("""
         padding: 0.2rem 0 !important;
         text-align: left !important;
         font-weight: 700 !important;
-        font-size: 1rem !important;
+        font-size: 0.95rem !important;
         width: auto !important;
     }
     .stButton > button[kind="secondary"]:hover {
@@ -128,6 +130,7 @@ st.markdown("""
         width: 42px !important;
         height: 42px !important;
         min-width: 42px !important;
+        max-width: 42px !important;
         padding: 0 !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
@@ -135,13 +138,38 @@ st.markdown("""
         align-items: center !important;
         justify-content: center !important;
         box-shadow: none !important;
+        overflow: hidden !important;
+        gap: 0 !important;
     }
     .stPopover > button:hover {
         background: var(--brand) !important;
     }
-    /* Hide the popover caret/arrow icon */
-    .stPopover > button svg {display: none !important;}
-    .stPopover > button::after {display: none !important;}
+    /* Hide the popover caret/arrow icon (expand_more material icon) */
+    .stPopover > button svg,
+    .stPopover > button > span:last-child,
+    .stPopover > button [data-testid="stIconMaterial"],
+    .stPopover > button .material-symbols-rounded {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        font-size: 0 !important;
+    }
+
+    /* ── File uploader – smaller drag-and-drop text ── */
+    .stFileUploader section {
+        padding: 0.5rem !important;
+    }
+    .stFileUploader section > div {
+        font-size: 0.7rem !important;
+    }
+    .stFileUploader small {
+        font-size: 0.65rem !important;
+    }
+    .stFileUploader section button {
+        font-size: 0.72rem !important;
+        padding: 0.2rem 0.8rem !important;
+    }
 
     /* Links */
     .link-text {color: var(--brand); font-weight: 600; text-decoration: none;}
@@ -615,10 +643,14 @@ def symptom_entry_screen():
 
     render_header()
 
-    # Back navigation (secondary = text-style button)
-    if st.button("< Symptom Entry", key="back_symptom"):
-        navigate("home")
-        st.rerun()
+    # Back navigation
+    col_back, col_title = st.columns([1, 8])
+    with col_back:
+        if st.button("<", key="back_symptom"):
+            navigate("home")
+            st.rerun()
+    with col_title:
+        st.markdown("<h2 style='margin:0;font-weight:800;font-size:1.4rem;'>Symptom Entry</h2>", unsafe_allow_html=True)
 
     st.markdown(
         "<p style='color:#888;font-size:0.88rem;margin-top:-0.5rem;'>Describe what you're seeing</p>",
@@ -767,10 +799,14 @@ def case_details_screen():
 
     render_header()
 
-    # Back navigation (secondary = text style)
-    if st.button("< Case Details", key="back_case"):
-        navigate("home")
-        st.rerun()
+    # Back navigation
+    col_back, col_title = st.columns([1, 8])
+    with col_back:
+        if st.button("<", key="back_case"):
+            navigate("home")
+            st.rerun()
+    with col_title:
+        st.markdown("<h2 style='margin:0;font-weight:800;font-size:1.4rem;'>Case Details</h2>", unsafe_allow_html=True)
 
     # Fetch case
     try:
@@ -883,10 +919,14 @@ def acknowledge_report_screen():
 
     render_header()
 
-    # Back navigation (secondary = text style)
-    if st.button("< Acknowledge Report", key="back_ack"):
-        navigate("home")
-        st.rerun()
+    # Back navigation
+    col_back, col_title = st.columns([1, 8])
+    with col_back:
+        if st.button("<", key="back_ack"):
+            navigate("home")
+            st.rerun()
+    with col_title:
+        st.markdown("<h2 style='margin:0;font-weight:800;font-size:1.4rem;'>Acknowledge Report</h2>", unsafe_allow_html=True)
 
     # Fetch case
     try:
