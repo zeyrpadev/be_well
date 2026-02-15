@@ -313,13 +313,17 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* View button inside recent-cases card – smaller pill */
-    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="primary"] {
-        font-size: 0.75rem !important;
-        padding: 0.35rem 1rem !important;
-        border-radius: 20px !important;
+    /* Open icon button inside recent-cases card */
+    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
+        background: transparent !important;
+        border: none !important;
+        font-size: 1.4rem !important;
+        font-weight: 400 !important;
+        padding: 0 !important;
         width: auto !important;
         min-height: 0 !important;
+        height: auto !important;
+        color: #333 !important;
     }
 
     /* Case entries inside the recent-cases card – remove all spacing */
@@ -653,7 +657,7 @@ def home_screen():
                         )
 
                     with btn_col:
-                        if st.button("View", key=f"case_{case_id}", type="primary"):
+                        if st.button("↗", key=f"case_{case_id}"):
                             st.session_state.selected_case_id = case_id
                             if role == "parent":
                                 navigate("acknowledge_report")
