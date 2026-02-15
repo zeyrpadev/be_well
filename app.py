@@ -604,7 +604,7 @@ def home_screen():
             # Recent Cases inside a single bordered container (card)
             with st.container(border=True):
                 st.markdown(
-                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;'>"
+                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;'>"
                     "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"
                     " Recent Cases</div>",
                     unsafe_allow_html=True,
@@ -633,7 +633,7 @@ def home_screen():
 
                     with info_col:
                         st.markdown(
-                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:1px;'>{display_date}</div>",
+                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;'>{display_date}</div>",
                             unsafe_allow_html=True,
                         )
                         if st.button(child_name, key=f"case_{case_id}"):
