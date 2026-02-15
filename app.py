@@ -90,7 +90,7 @@ st.markdown("""
         padding: 0.2rem 0 !important;
         text-align: left !important;
         font-weight: 800 !important;
-        font-size: 340px !important;
+        font-size: 10em !important;
         height: 34px !important;
         line-height: 34px !important;
         width: auto !important;
