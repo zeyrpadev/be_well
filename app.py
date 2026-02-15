@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from datetime import date, datetime
 import os
 from dotenv import load_dotenv
@@ -81,7 +82,7 @@ st.markdown("""
         background-color: var(--brand-light) !important;
     }
 
-    /* ── Secondary buttons (back nav + case entries – look like text) ── */
+    /* ── Secondary buttons (case entries – look like text links) ── */
     .stButton > button[kind="secondary"] {
         background: transparent !important;
         color: var(--text-dark) !important;
@@ -89,10 +90,8 @@ st.markdown("""
         box-shadow: none !important;
         padding: 0.2rem 0 !important;
         text-align: left !important;
-        font-weight: 800 !important;
-        font-size: 2rem !important;
-        height: 34px !important;
-        line-height: 34px !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
         width: auto !important;
     }
     .stButton > button[kind="secondary"]:hover {
@@ -306,6 +305,14 @@ st.markdown("""
         border: none !important;
     }
 
+    /* ── Hide back-nav trigger buttons (preceded by .hide-next-btn marker) ── */
+    *:has(.hide-next-btn) + * .stButton {
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+    }
+
     /* Case entry row inside the recent-cases card */
     .case-entry-row {
         display: flex;
@@ -379,6 +386,44 @@ def render_header():
     with avatar_col:
         if st.button(initial, key="avatar_btn", type="primary"):
             do_logout()
+
+
+def render_back_nav(label, button_key):
+    """Render a clickable h2 back nav that triggers a hidden Streamlit button."""
+    # Marker to hide the next button via CSS
+    st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
+    clicked = st.button(button_key, key=button_key)
+
+    # Clickable h2 via components.html (supports onclick JS)
+    components.html(
+        f"""
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+            .back-h2 {{
+                font-family: 'Montserrat', sans-serif;
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: #1E1E1E;
+                cursor: pointer;
+                margin: 0;
+                padding: 0;
+                user-select: none;
+            }}
+            .back-h2:hover {{ color: #2B6777; }}
+        </style>
+        <h2 class="back-h2" onclick="
+            const buttons = window.parent.document.querySelectorAll('button');
+            for (const b of buttons) {{
+                if (b.innerText.trim() === '{button_key}') {{ b.click(); break; }}
+            }}
+        ">‹ {label}</h2>
+        """,
+        height=45,
+    )
+
+    if clicked:
+        navigate("home")
+        st.rerun()
 
 
 def format_date_display(date_str):
@@ -628,10 +673,7 @@ def symptom_entry_screen():
 
     render_header()
 
-    # Back navigation (secondary = text-style button)
-    if st.button("< Symptom Entry", key="back_symptom"):
-        navigate("home")
-        st.rerun()
+    render_back_nav("Symptom Entry", "back_symptom")
 
     st.markdown(
         "<p style='color:#888;font-size:0.88rem;margin-top:-0.5rem;'>Describe what you're seeing</p>",
@@ -780,10 +822,7 @@ def case_details_screen():
 
     render_header()
 
-    # Back navigation (secondary = text-style button)
-    if st.button("< Case Details", key="back_case"):
-        navigate("home")
-        st.rerun()
+    render_back_nav("Case Details", "back_case")
 
     # Fetch case
     try:
@@ -896,10 +935,7 @@ def acknowledge_report_screen():
 
     render_header()
 
-    # Back navigation (secondary = text-style button)
-    if st.button("< Acknowledge Report", key="back_ack"):
-        navigate("home")
-        st.rerun()
+    render_back_nav("Acknowledge Report", "back_ack")
 
     # Fetch case
     try:
