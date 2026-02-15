@@ -92,7 +92,7 @@ st.markdown("""
         text-align: left !important;
         font-weight: 700 !important;
         font-size: 0.95rem !important;
-        width: auto !important;r
+        width: auto !important;
     }
     .stButton > button[kind="secondary"]:hover {
         background: transparent !important;
@@ -313,7 +313,13 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* Case entry name button inside the recent-cases card – tighter spacing */
+    /* Case entries inside the recent-cases card – remove all spacing */
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="column"] > div {
+        gap: 0 !important;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="column"] [data-testid="stVerticalBlock"] {
+        gap: 0 !important;
+    }
     [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
         padding: 0 !important;
         margin: 0 !important;
@@ -322,6 +328,13 @@ st.markdown("""
         line-height: 1.2 !important;
         height: auto !important;
         min-height: 0 !important;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"] .stMarkdown {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    [data-testid="stVerticalBlockBorderWrapper"] [data-testid="element-container"] {
+        margin: 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -617,7 +630,7 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col = st.columns([1,2.5])
+                    img_col, info_col = st.columns([1, 2.5])
 
                     with img_col:
                         if photo_url:
@@ -633,7 +646,7 @@ def home_screen():
 
                     with info_col:
                         st.markdown(
-                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:-10px;'>{display_date}</div>",
+                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:1px;'>{display_date}</div>",
                             unsafe_allow_html=True,
                         )
                         if st.button(child_name, key=f"case_{case_id}"):
@@ -644,7 +657,7 @@ def home_screen():
                                 navigate("case_details")
                             st.rerun()
                         st.markdown(
-                            f"<div style='font-size:0.85rem;color:#555;'>{symptom}</div>",
+                            f"<div style='font-size:0.85rem;color:#555;margin-top:-0.6rem;'>{symptom}</div>",
                             unsafe_allow_html=True,
                         )
 
