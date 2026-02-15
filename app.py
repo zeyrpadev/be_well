@@ -523,7 +523,7 @@ def login_screen():
 
     st.markdown(
         """
-        <div class="social-btn">
+        <div class="social-row">
             <img src="https://img.icons8.com/?size=100&id=30840&format=png&color=000000"
                      width="20" style="vertical-align:middle;">
             <div class="social-btn">
