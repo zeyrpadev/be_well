@@ -313,21 +313,21 @@ st.markdown("""
         margin: 0 !important;
     }
 
+    /* View button inside recent-cases card – smaller pill */
+    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="primary"] {
+        font-size: 0.75rem !important;
+        padding: 0.35rem 1rem !important;
+        border-radius: 20px !important;
+        width: auto !important;
+        min-height: 0 !important;
+    }
+
     /* Case entries inside the recent-cases card – remove all spacing */
     [data-testid="stVerticalBlockBorderWrapper"] [data-testid="column"] > div {
         gap: 0 !important;
     }
     [data-testid="stVerticalBlockBorderWrapper"] [data-testid="column"] [data-testid="stVerticalBlock"] {
         gap: 0 !important;
-    }
-    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 0.95rem !important;
-        font-weight: 700 !important;
-        line-height: 1.2 !important;
-        height: auto !important;
-        min-height: 0 !important;
     }
     [data-testid="stVerticalBlockBorderWrapper"] .stMarkdown {
         margin: 0 !important;
@@ -630,7 +630,7 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col = st.columns([1, 2.5])
+                    img_col, info_col, btn_col = st.columns([1.2, 2.5, 1])
 
                     with img_col:
                         if photo_url:
@@ -646,20 +646,20 @@ def home_screen():
 
                     with info_col:
                         st.markdown(
-                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:1px;'>{display_date}</div>",
+                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;'>{display_date}</div>"
+                            f"<div style='font-size:0.95rem;font-weight:700;color:#1E1E1E;'>{child_name}</div>"
+                            f"<div style='font-size:0.85rem;color:#555;'>{symptom}</div>",
                             unsafe_allow_html=True,
                         )
-                        if st.button(child_name, key=f"case_{case_id}"):
+
+                    with btn_col:
+                        if st.button("View", key=f"case_{case_id}", type="primary"):
                             st.session_state.selected_case_id = case_id
                             if role == "parent":
                                 navigate("acknowledge_report")
                             else:
                                 navigate("case_details")
                             st.rerun()
-                        st.markdown(
-                            f"<div style='font-size:0.85rem;color:#555;margin-top:-0.6rem;'>{symptom}</div>",
-                            unsafe_allow_html=True,
-                        )
 
     except Exception as e:
         st.error(f"Failed to load cases: {e}")
