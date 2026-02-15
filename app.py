@@ -90,9 +90,9 @@ st.markdown("""
         padding: 0.2rem 0 !important;
         text-align: left !important;
         font-weight: 800 !important;
-        font-size: 34em !important;
-        height: 340px !important;
-        line-height: 340px !important;
+        font-size: 1em !important;
+        height: 34px !important;
+        line-height: 34px !important;
         width: auto !important;
     }
     .stButton > button[kind="secondary"]:hover {
