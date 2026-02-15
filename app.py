@@ -617,7 +617,7 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col = st.columns([0,2.5])
+                    img_col, info_col = st.columns([1,2.5])
 
                     with img_col:
                         if photo_url:
@@ -633,7 +633,7 @@ def home_screen():
 
                     with info_col:
                         st.markdown(
-                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:1px;'>{display_date}</div>",
+                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;margin-bottom:-10px;'>{display_date}</div>",
                             unsafe_allow_html=True,
                         )
                         if st.button(child_name, key=f"case_{case_id}"):
