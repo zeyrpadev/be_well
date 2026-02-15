@@ -120,42 +120,28 @@ st.markdown("""
         content: ""; flex: 1; height: 1px; background: #ddd;
     }
 
-    /* Header bell icon (HTML) */
-    .header-bell {font-size: 1.3rem; color: #555; cursor: pointer; padding-top: 0.4rem;}
+    /* Header bell icon */
+    .header-bell {
+        display: flex; align-items: center; justify-content: center;
+        padding-top: 0.3rem;
+    }
+    .header-bell svg {width: 24px; height: 24px;}
 
-    /* Popover avatar trigger – make it look like a circle avatar */
-    .stPopover > button {
-        background: var(--brand-light) !important;
-        color: white !important;
-        border: none !important;
+    /* Avatar logout button – circle style for primary buttons inside columns */
+    [data-testid="column"] .stButton > button[kind="primary"] {
         border-radius: 50% !important;
         width: 42px !important;
         height: 42px !important;
         min-width: 42px !important;
         max-width: 42px !important;
+        min-height: 42px !important;
         padding: 0 !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: none !important;
-        overflow: hidden !important;
-        gap: 0 !important;
+        background: var(--brand-light) !important;
     }
-    .stPopover > button:hover {
+    [data-testid="column"] .stButton > button[kind="primary"]:hover {
         background: var(--brand) !important;
-    }
-    /* Hide the popover caret/arrow icon (expand_more material icon) */
-    .stPopover > button svg,
-    .stPopover > button > span:last-child,
-    .stPopover > button [data-testid="stIconMaterial"],
-    .stPopover > button .material-symbols-rounded {
-        display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-        font-size: 0 !important;
     }
 
     /* ── File uploader – smaller drag-and-drop text ── */
@@ -386,16 +372,13 @@ def do_logout():
 
 def render_header():
     initial = (st.session_state.display_name or "U")[0].upper()
-    # Right-aligned bell + avatar popover with logout
+    bell_svg = '''<div class="header-bell"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>'''
     spacer, bell_col, avatar_col = st.columns([6, 1, 1])
     with bell_col:
-        st.markdown("<div class='header-bell'>🔔</div>", unsafe_allow_html=True)
+        st.markdown(bell_svg, unsafe_allow_html=True)
     with avatar_col:
-        with st.popover(initial):
-            st.markdown(f"**{st.session_state.display_name or 'User'}**")
-            st.caption(st.session_state.role.title() if st.session_state.role else "")
-            if st.button("Logout", key="header_logout", type="primary"):
-                do_logout()
+        if st.button(initial, key="avatar_btn", type="primary"):
+            do_logout()
 
 
 def format_date_display(date_str):
