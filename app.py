@@ -600,12 +600,7 @@ def render_header(page_key=""):
                 </svg>
             </div>
             <div class="header-avatar">{initial}</div>
-            <div class="logout-btn" onclick="
-                const buttons = window.parent.document.querySelectorAll('button');
-                for (const b of buttons) {{
-                    if (b.innerText.trim() === 'logout_trigger') {{ b.click(); break; }}
-                }}
-            ">
+            <div class="logout-btn" onclick="triggerLogout()" ontouchend="triggerLogout()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                      fill="none" stroke="#D32F2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -614,6 +609,16 @@ def render_header(page_key=""):
                 </svg>
             </div>
         </div>
+        <script>
+            function triggerLogout() {{
+                try {{
+                    const buttons = window.parent.document.querySelectorAll('button');
+                    for (const b of buttons) {{
+                        if (b.innerText.trim() === 'logout_trigger') {{ b.click(); return; }}
+                    }}
+                }} catch(e) {{}}
+            }}
+        </script>
         """,
         height=60,
     )
@@ -651,12 +656,17 @@ def render_back_nav(label, button_key):
                 .back-h2 {{ font-size: 0.95rem; }}
             }}
         </style>
-        <h2 class="back-h2" onclick="
-            const buttons = window.parent.document.querySelectorAll('button');
-            for (const b of buttons) {{
-                if (b.innerText.trim() === '{button_key}') {{ b.click(); break; }}
+        <h2 class="back-h2" onclick="triggerBack()" ontouchend="triggerBack()">‹ {label}</h2>
+        <script>
+            function triggerBack() {{
+                try {{
+                    const buttons = window.parent.document.querySelectorAll('button');
+                    for (const b of buttons) {{
+                        if (b.innerText.trim() === '{button_key}') {{ b.click(); return; }}
+                    }}
+                }} catch(e) {{}}
             }}
-        ">‹ {label}</h2>
+        </script>
         """,
         height=40,
     )
@@ -905,12 +915,7 @@ def home_screen():
                             }}
                             .case-row-view:hover {{ background:#2B6777; color:white; border-color:#2B6777; }}
                         </style>
-                        <div class="case-row" onclick="
-                            const buttons = window.parent.document.querySelectorAll('button');
-                            for (const b of buttons) {{
-                                if (b.innerText.trim() === '{btn_label}') {{ b.click(); break; }}
-                            }}
-                        ">
+                        <div class="case-row" onclick="triggerBtn()" ontouchend="triggerBtn()">
                             {img_html}
                             <div class="case-row-info">
                                 <div class="case-row-date">{display_date}</div>
@@ -919,8 +924,21 @@ def home_screen():
                             </div>
                             <div class="case-row-view">View ↗</div>
                         </div>
+                        <script>
+                            function triggerBtn() {{
+                                try {{
+                                    const buttons = window.parent.document.querySelectorAll('button');
+                                    for (const b of buttons) {{
+                                        if (b.innerText.trim() === '{btn_label}') {{ b.click(); return; }}
+                                    }}
+                                }} catch(e) {{
+                                    // Fallback: postMessage for sandboxed iframes
+                                    window.parent.postMessage({{stCommVersion:1, type:'streamlit:setComponentValue', value:true}}, '*');
+                                }}
+                            }}
+                        </script>
                         """,
-                        height=85,
+                        height=90,
                     )
                     if clicked:
                         st.session_state.selected_case_id = case_id
