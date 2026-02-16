@@ -536,6 +536,44 @@ def render_header(page_key=""):
         """,
         unsafe_allow_html=True,
     )
+    # Logout button
+    st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
+    logout_clicked = st.button("logout_trigger", key=f"logout_{page_key}")
+    components.html(
+        """
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
+            .logout-btn {
+                display: inline-flex; align-items: center; gap: 6px;
+                float: right; margin-top: -48px; margin-right: 0;
+                background: transparent; border: 1.5px solid #ddd; border-radius: 20px;
+                padding: 6px 14px; cursor: pointer;
+                font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600;
+                color: #D32F2F;
+            }
+            .logout-btn:hover { background: #D32F2F; color: white; border-color: #D32F2F; }
+            .logout-btn svg { width: 16px; height: 16px; }
+            .logout-btn:hover svg { stroke: white; }
+        </style>
+        <div class="logout-btn" onclick="
+            const buttons = window.parent.document.querySelectorAll('button');
+            for (const b of buttons) {
+                if (b.innerText.trim() === 'logout_trigger') { b.click(); break; }
+            }
+        ">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="#D32F2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Log out
+        </div>
+        """,
+        height=10,
+    )
+    if logout_clicked:
+        do_logout()
 
 
 def render_back_nav(label, button_key):
@@ -781,16 +819,44 @@ def home_screen():
                         else '<div class="case-row-img-placeholder"></div>'
                     )
 
-                    # Hidden marker + hidden button for navigation
+                    # Hidden button for navigation
                     st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
-                    clicked = st.button(f"view_{case_id}", key=f"case_{case_id}")
+                    btn_label = f"view_{case_id}"
+                    clicked = st.button(btn_label, key=f"case_{case_id}")
 
-                    st.markdown(
+                    # Clickable case row via components.html (supports onclick)
+                    components.html(
                         f"""
+                        <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+                            * {{ margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }}
+                            .case-row {{
+                                display:flex; align-items:center; gap:12px; padding:8px 4px;
+                                cursor:pointer; border-bottom:1px solid #f0f0f0;
+                            }}
+                            .case-row:hover {{ background:#fafafa; }}
+                            .case-row-img, .case-row-img-placeholder {{
+                                width:64px; height:64px; min-width:64px;
+                                object-fit:cover; border-radius:12px;
+                            }}
+                            .case-row-img-placeholder {{ background:#e8e8e8; }}
+                            .case-row-info {{ flex:1; min-width:0; }}
+                            .case-row-date {{ font-size:0.72rem; color:#2B6777; font-weight:500; }}
+                            .case-row-name {{ font-size:0.92rem; font-weight:700; color:#1E1E1E;
+                                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
+                            .case-row-symptom {{ font-size:0.82rem; color:#555;
+                                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
+                            .case-row-view {{
+                                margin-left:auto; flex-shrink:0; font-size:0.75rem; font-weight:600;
+                                color:#2B6777; border:1.5px solid #ddd; border-radius:20px;
+                                padding:5px 14px; white-space:nowrap; cursor:pointer;
+                            }}
+                            .case-row-view:hover {{ background:#2B6777; color:white; border-color:#2B6777; }}
+                        </style>
                         <div class="case-row" onclick="
                             const buttons = window.parent.document.querySelectorAll('button');
                             for (const b of buttons) {{
-                                if (b.innerText.trim() === 'view_{case_id}') {{ b.click(); break; }}
+                                if (b.innerText.trim() === '{btn_label}') {{ b.click(); break; }}
                             }}
                         ">
                             {img_html}
@@ -802,7 +868,7 @@ def home_screen():
                             <div class="case-row-view">View ↗</div>
                         </div>
                         """,
-                        unsafe_allow_html=True,
+                        height=85,
                     )
                     if clicked:
                         st.session_state.selected_case_id = case_id
