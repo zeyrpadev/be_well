@@ -7,7 +7,7 @@ from supabase import create_client
 
 load_dotenv()
 
-st.set_page_config(page_title="Be Well", page_icon="💚", layout="wide")
+st.set_page_config(page_title="Be Well", page_icon="💚", layout="centered")
 
 # ── Supabase client ────────────────────────────────────────────────────
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -36,6 +36,7 @@ if st.session_state.get("access_token") and st.session_state.get("refresh_token"
 
 # ── Global CSS ──────────────────────────────────────────────────────────
 st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <style>
     /* ── Montserrat font ── */
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
@@ -52,9 +53,29 @@ st.markdown("""
     /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
     .block-container {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 1rem 1rem;
+        max-width: 960px !important;
+        padding: 1rem 1.5rem !important;
+        margin: 0 auto !important;
+    }
+
+    /* ── Responsive breakpoints ── */
+    @media (max-width: 480px) {
+        .block-container {
+            max-width: 100% !important;
+            padding: 0.75rem 1rem !important;
+        }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+        .block-container {
+            max-width: 600px !important;
+            padding: 1rem 2rem !important;
+        }
+    }
+    @media (min-width: 769px) {
+        .block-container {
+            max-width: 960px !important;
+            padding: 1.5rem 3rem !important;
+        }
     }
 
     /* Brand colours */
@@ -104,12 +125,12 @@ st.markdown("""
     .social-btn {
         display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         border: 1.5px solid #ddd; border-radius: 25px;
-        padding: 10px 0; width: 48%; text-align: center;
+        padding: 10px 0; width: 48%; max-width: 200px; text-align: center;
         font-size: 0.9rem; font-weight: 500; color: var(--text-dark);
         background: white; cursor: pointer;
     }
     .social-btn:hover {background: #f9f9f9;}
-    .social-row {display: flex; gap: 4%; justify-content: center; margin: 0.5rem 0;}
+    .social-row {display: flex; gap: 4%; justify-content: center; margin: 0.5rem 0; flex-wrap: wrap;}
 
     /* Divider */
     .or-divider {
@@ -153,6 +174,9 @@ st.markdown("""
     .stSelectbox > div > div,
     .stDateInput > div > div > input {
         border-radius: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important;  /* Prevents iOS zoom on focus */
     }
 
     /* Symptom bubble */
@@ -202,6 +226,66 @@ st.markdown("""
         padding: 3px 14px;
         font-size: 0.78rem;
         font-weight: 600;
+    }
+
+    /* ── Responsive case image ── */
+    .case-img {
+        width: 100%;
+        max-width: 80px;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+    .case-img-placeholder {
+        width: 100%;
+        max-width: 80px;
+        aspect-ratio: 1;
+        border-radius: 14px;
+        background: #e8e8e8;
+    }
+    @media (min-width: 769px) {
+        .case-img, .case-img-placeholder {
+            max-width: 100px;
+        }
+    }
+
+    /* ── Responsive typography ── */
+    @media (min-width: 769px) {
+        .carer-home-title {
+            font-size: 1.8rem !important;
+        }
+        .symptom-bubble {
+            font-size: 1rem;
+            padding: 1rem 1.4rem;
+        }
+        .ai-card, .ai-card-dark {
+            padding: 1.5rem 2rem;
+        }
+        .ai-text {
+            font-size: 0.95rem;
+        }
+        .red-flags-card, .update-card, .symptom-section-card {
+            padding: 1.5rem 2rem;
+        }
+        .social-btn {
+            padding: 12px 0;
+            font-size: 1rem;
+        }
+    }
+
+    /* ── Responsive button sizing ── */
+    @media (min-width: 769px) {
+        .stButton > button[kind="primary"] {
+            max-width: 400px !important;
+            display: block !important;
+            margin: 0 auto !important;
+        }
+        .stTextInput, .stTextArea, .stSelectbox, .stDateInput, .stFileUploader {
+            max-width: 500px !important;
+        }
+        .stCheckbox {
+            max-width: 500px !important;
+        }
     }
 
     /* Red flags */
@@ -277,7 +361,7 @@ st.markdown("""
     /* Disclaimer text */
     .disclaimer {
         color: var(--text-muted);
-        font-size: 0.72rem;
+        font-size: clamp(0.7rem, 1.5vw, 0.85rem);
         text-align: center;
         margin-top: 2rem;
         line-height: 1.4;
@@ -297,13 +381,6 @@ st.markdown("""
         overflow: hidden !important;
         margin: 0 !important;
     }
-
-    @media (max-width: 768px) {
-        .block-container {
-            padding: 1rem;
-        }
-    }
-
 
     /* Open icon button inside recent-cases card */
     [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
@@ -386,7 +463,7 @@ def render_header(page_key=""):
         st.markdown(bell_svg, unsafe_allow_html=True)
     with avatar_col:
         st.markdown(
-            f"""<div style="width:42px;height:42px;border-radius:50%;background:#52AB98;
+            f"""<div style="width:clamp(36px,8vw,48px);height:clamp(36px,8vw,48px);border-radius:50%;background:#52AB98;
             display:flex;align-items:center;justify-content:center;
             color:white;font-weight:700;font-size:1rem;font-family:'Montserrat',sans-serif;">
             {initial}</div>""",
@@ -407,7 +484,7 @@ def render_back_nav(label, button_key):
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
             .back-h2 {{
                 font-family: 'Montserrat', sans-serif;
-                font-size: 1.5rem;
+                font-size: clamp(1.2rem, 3vw, 1.8rem);
                 font-weight: 800;
                 color: #1E1E1E;
                 cursor: pointer;
@@ -453,7 +530,7 @@ def login_screen():
     st.markdown("<div style='height:3rem;'></div>", unsafe_allow_html=True)
 
     st.markdown(
-        "<h2 style='text-align:center;font-weight:800;margin-bottom:0.2rem;'>Welcome Back!</h2>",
+        "<h2 style='text-align:center;font-weight:800;margin-bottom:0.2rem;font-size:clamp(1.4rem,4vw,2rem);'>Welcome Back!</h2>",
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -524,10 +601,7 @@ def login_screen():
     st.markdown(
         """
         <div class="social-row">
-            <div class="social-btn">
-            <img src="https://img.icons8.com/?size=100&id=30840&format=png&color=000000"
-                     width="20" style="vertical-align:middle;">
-            </div>
+            <div class="social-btn">🍎</div>
             <div class="social-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                      width="20" style="vertical-align:middle;">
@@ -621,7 +695,7 @@ def home_screen():
             # Recent Cases inside a single bordered container (card)
             with st.container(border=True):
                 st.markdown(
-                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;'>"
+                    "<div style='font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;'>"
                     "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='#333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"
                     " Recent Cases</div>",
                     unsafe_allow_html=True,
@@ -634,17 +708,17 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col, btn_col = st.columns([1,1, 1])
+                    img_col, info_col, btn_col = st.columns([1.2, 2.5, 1])
 
                     with img_col:
                         if photo_url:
                             st.markdown(
-                                f'<img src="{photo_url}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin-bottom:10px;">',
+                                f'<img src="{photo_url}" class="case-img">',
                                 unsafe_allow_html=True,
                             )
                         else:
                             st.markdown(
-                                '<div style="width:80px;height:80px;border-radius:14px;background:#e8e8e8;margin-bottom:10px;"></div>',
+                                '<div class="case-img-placeholder"></div>',
                                 unsafe_allow_html=True,
                             )
 
