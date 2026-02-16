@@ -341,15 +341,7 @@ st.markdown("""
     }
 
     /* ── Responsive centering for form elements ── */
-    @media (min-width: 480px) {
-        .stButton > button[kind="primary"] {
-            max-width: 320px !important;
-        }
-    }
-    @media (min-width: 769px) {
-        .stButton > button[kind="primary"] {
-            max-width: 400px !important;
-        }
+
         .stTextInput, .stTextArea, .stSelectbox, .stDateInput, .stFileUploader {
             max-width: 500px !important;
             margin-left: auto !important;
