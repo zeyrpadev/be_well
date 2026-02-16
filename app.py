@@ -90,20 +90,26 @@ st.markdown("""
     }
 
     /* ── Primary buttons (teal filled) ── */
+    /* Primary buttons */
     .stButton > button[kind="primary"] {
         background-color: var(--brand) !important;
         color: white !important;
         border: none !important;
         border-radius: 25px !important;
-        padding: 0.5rem 1.2rem !important;
+        padding: 0.6rem 1.5rem !important;
         font-weight: 600 !important;
-        font-size: clamp(0.85rem, 2vw, 1rem) !important;
-        width: auto;
-        transition: background-color 0.2s;
+        font-size: 1rem !important;
+
+        width: auto !important;          /* ← remove full width */
+        min-width: 140px;                /* optional */
     }
-    .stButton > button[kind="primary"]:hover {
-        background-color: var(--brand-light) !important;
+
+    /* Force wrapper left alignment */
+    .stButton {
+        display: flex !important;
+        justify-content: flex-start !important;
     }
+
 
     /* Primary button responsive sizing */
     @media (min-width: 480px) {
@@ -117,13 +123,6 @@ st.markdown("""
             font-size: 1rem !important;
         }
     }
-
-    /* Force primary button wrapper to left align */
-    .stButton {
-        display: flex !important;
-        justify-content: flex-start !important;
-    }
-
 
     /* ── Secondary buttons (case entries – look like text links) ── */
     .stButton > button[kind="secondary"] {
