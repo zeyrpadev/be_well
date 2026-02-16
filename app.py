@@ -95,16 +95,21 @@ st.markdown("""
         color: white !important;
         border: none !important;
         border-radius: 25px !important;
+
         padding: clamp(0.5rem, 1.5vw, 0.7rem)
                  clamp(1rem, 3vw, 2rem) !important;
+
         font-weight: 600 !important;
         font-size: clamp(0.85rem, 2vw, 1rem) !important;
+
         width: 100%;
-        transition: background-color 0.2s;
+        transition: background-color 0.2s ease;
     }
+
     .stButton > button[kind="primary"]:hover {
         background-color: var(--brand-light) !important;
     }
+
 
     /* ── Secondary buttons (case entries – look like text links) ── */
     .stButton > button[kind="secondary"] {
