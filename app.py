@@ -356,7 +356,11 @@ st.markdown("""
     @media (min-width: 769px) {
         .stButton > button[kind="primary"] {
             max-width: 400px !important;
+            margin-left: 0 !important;
+            margin-right: auto !important;
+            display: block !important;
         }
+
         .stTextInput, .stTextArea, .stSelectbox, .stDateInput, .stFileUploader {
             max-width: 500px !important;
             margin-left: auto !important;
