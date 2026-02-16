@@ -564,13 +564,12 @@ def render_header(page_key=""):
                 color:white; font-weight:700; font-size:1rem;
             }}
             .logout-btn {{
-                display:inline-flex; align-items:center; gap:6px;
-                background:transparent; border:1.5px solid #ddd; border-radius:20px;
-                padding:7px 14px; cursor:pointer;
-                font-family:'Montserrat',sans-serif; font-size:0.75rem; font-weight:600;
-                color:#D32F2F; text-decoration:none;
+                display:inline-flex; align-items:center; justify-content:center;
+                width:42px; height:42px; border-radius:50%;
+                background:transparent; border:1.5px solid #ddd;
+                cursor:pointer; text-decoration:none;
             }}
-            .logout-btn:hover {{ background:#D32F2F; color:white; border-color:#D32F2F; }}
+            .logout-btn:hover {{ background:#D32F2F; border-color:#D32F2F; }}
             .logout-btn:hover svg {{ stroke:white; }}
         </style>
         <div class="app-header">
