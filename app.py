@@ -95,13 +95,27 @@ st.markdown("""
         color: white !important;
         border: none !important;
         border-radius: 25px !important;
-        padding: 0.6rem 1.5rem !important;
+        padding: 0.5rem 1.2rem !important;
         font-weight: 600 !important;
+        font-size: clamp(0.85rem, 2vw, 1rem) !important;
         width: 100%;
         transition: background-color 0.2s;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: var(--brand-light) !important;
+    }
+
+    /* Primary button responsive sizing */
+    @media (min-width: 480px) {
+        .stButton > button[kind="primary"] {
+            padding: 0.6rem 1.5rem !important;
+        }
+    }
+    @media (min-width: 769px) {
+        .stButton > button[kind="primary"] {
+            padding: 0.7rem 2rem !important;
+            font-size: 1rem !important;
+        }
     }
 
     /* ── Secondary buttons (case entries – look like text links) ── */
@@ -337,11 +351,16 @@ st.markdown("""
     }
 
     /* ── Responsive centering for form elements ── */
+    @media (min-width: 480px) {
+        .stButton > button[kind="primary"] {
+            max-width: 320px !important;
+            display: block !important;
+            margin: 0 auto !important;
+        }
+    }
     @media (min-width: 769px) {
         .stButton > button[kind="primary"] {
             max-width: 400px !important;
-            display: block !important;
-            margin: 0 auto !important;
         }
         .stTextInput, .stTextArea, .stSelectbox, .stDateInput, .stFileUploader {
             max-width: 500px !important;
@@ -600,17 +619,24 @@ def render_back_nav(label, button_key):
         f"""
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
             .back-h2 {{
                 font-family: 'Montserrat', sans-serif;
-                font-size: clamp(1.2rem, 3vw, 1.8rem);
+                font-size: clamp(1rem, 2.5vw, 1.8rem);
                 font-weight: 800;
                 color: #1E1E1E;
                 cursor: pointer;
                 margin: 0;
-                padding: 0;
+                padding: 4px 0;
                 user-select: none;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }}
             .back-h2:hover {{ color: #2B6777; }}
+            @media (max-width: 360px) {{
+                .back-h2 {{ font-size: 0.95rem; }}
+            }}
         </style>
         <h2 class="back-h2" onclick="
             const buttons = window.parent.document.querySelectorAll('button');
@@ -619,7 +645,7 @@ def render_back_nav(label, button_key):
             }}
         ">‹ {label}</h2>
         """,
-        height=45,
+        height=40,
     )
 
     if clicked:
@@ -719,10 +745,7 @@ def login_screen():
     st.markdown(
         """
         <div class="social-row">
-            <div class="social-btn">
-            <img src="https://img.icons8.com/?size=100&id=30840&format=png&color=000000"
-                width="20" style="vertical-align:middle;">
-        </div>
+            <div class="social-btn">🍎</div>
             <div class="social-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                      width="20" style="vertical-align:middle;">
