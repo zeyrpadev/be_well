@@ -92,17 +92,33 @@ st.markdown("""
     /* ── Primary buttons (teal filled) ── */
     /* Primary buttons */
     .stButton > button[kind="primary"] {
-        background-color: var(--brand) !important;
+        background-color: #3F6F86 !important;   /* softer blue */
         color: white !important;
         border: none !important;
-        border-radius: 25px !important;
-        padding: 0.6rem 1.5rem !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
 
-        width: auto !important;          /* ← remove full width */
-        min-width: 140px;                /* optional */
+        width: 100% !important;
+        height: 48px !important;                /* taller */
+    
+        border-radius: 30px !important;         /* pill shape */
+    
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        transition: all 0.2s ease !important;
     }
+
+/* Hover effect */
+.stButton > button[kind="primary"]:hover {
+    background-color: #356174 !important;
+    transform: translateY(-1px);
+}
+
+/* Remove weird Streamlit focus outline */
+.stButton > button:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(63,111,134,0.2) !important;
+}
 
     /* Force wrapper left alignment */
     .stButton {
