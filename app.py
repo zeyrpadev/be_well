@@ -785,10 +785,18 @@ def home_screen():
         st.markdown("<div class='carer-home-title'>Carer Home</div>", unsafe_allow_html=True)
 
     # New Case button (only for non-parents)
-    if role != "parent":
-        if st.button("New Case  ➕", type="primary"):
-            navigate("symptom_entry")
-            st.rerun()
+    left, center, right = st.columns([1, 2, 1])
+    with center:
+
+        if role == "parent":
+            st.markdown("<div class='carer-home-title'>Parent Home</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='carer-home-title'>Carer Home</div>", unsafe_allow_html=True)
+
+        if role != "parent":
+            if st.button("New Case  ➕", type="primary"):
+                navigate("symptom_entry")
+                st.rerun()
 
     st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
 
