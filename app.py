@@ -91,6 +91,7 @@ st.markdown("""
 
     /* ── Primary buttons (teal filled) ── */
     /* Primary buttons */
+    /* ── Primary Button Modern Style ── */
     .stButton > button[kind="primary"] {
         background-color: #3F6F86 !important;   /* softer blue */
         color: white !important;
@@ -107,6 +108,19 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         transition: all 0.2s ease !important;
     }
+
+    /* Hover effect */
+    .stButton > button[kind="primary"]:hover {
+        background-color: #356174 !important;
+        transform: translateY(-1px);
+    }
+
+    /* Remove weird Streamlit focus outline */
+    .stButton > button:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(63,111,134,0.2) !important;
+    }
+
 
 /* Hover effect */
 .stButton > button[kind="primary"]:hover {
