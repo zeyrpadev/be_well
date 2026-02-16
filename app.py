@@ -777,7 +777,7 @@ def home_screen():
                         unsafe_allow_html=True,
                     )
                     # Hidden-looking open button (still needed for Streamlit navigation)
-                    if st.button("Open ↗", key=f"case_{case_id}", type="secondary"):
+                    if st.button("↗", key=f"case_{case_id}", type="secondary"):
                         st.session_state.selected_case_id = case_id
                         if role == "parent":
                             navigate("acknowledge_report")
