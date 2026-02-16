@@ -7,7 +7,7 @@ from supabase import create_client
 
 load_dotenv()
 
-st.set_page_config(page_title="Be Well", page_icon="💚", layout="centered")
+st.set_page_config(page_title="Be Well", page_icon="💚", layout="wide")
 
 # ── Supabase client ────────────────────────────────────────────────────
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -52,6 +52,15 @@ st.markdown("""
 
     /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
+
+    /* Force Streamlit main container to fill the viewport on mobile */
+    .stApp > header + div,
+    .stApp [data-testid="stAppViewContainer"],
+    .stApp [data-testid="stMain"],
+    section[data-testid="stSidebar"] + section,
+    .main .block-container {
+        width: 100% !important;
+    }
     .block-container {
         max-width: 960px !important;
         padding: 1rem 1.5rem !important;
@@ -63,6 +72,14 @@ st.markdown("""
         .block-container {
             max-width: 100% !important;
             padding: 0.75rem 1rem !important;
+        }
+        /* Override Streamlit's inner padding that shrinks content on mobile */
+        .stApp [data-testid="stAppViewContainer"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        .stApp [data-testid="stMain"] {
+            padding: 0 !important;
         }
     }
     @media (min-width: 481px) and (max-width: 768px) {
