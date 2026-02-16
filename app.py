@@ -336,7 +336,7 @@ st.markdown("""
         }
     }
 
-    /* ── Responsive button sizing ── */
+    /* ── Responsive centering for form elements ── */
     @media (min-width: 769px) {
         .stButton > button[kind="primary"] {
             max-width: 400px !important;
@@ -345,9 +345,18 @@ st.markdown("""
         }
         .stTextInput, .stTextArea, .stSelectbox, .stDateInput, .stFileUploader {
             max-width: 500px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
         .stCheckbox {
             max-width: 500px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        .stMarkdown {
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
     }
 
@@ -520,10 +529,36 @@ def do_logout():
 
 def render_header(page_key=""):
     initial = (st.session_state.display_name or "U")[0].upper()
-    st.markdown(
+    # Hidden button for logout trigger
+    st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
+    logout_clicked = st.button("logout_trigger", key=f"logout_{page_key}")
+    # Full header bar with bell, avatar, and logout via components.html
+    components.html(
         f"""
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
+            * {{ margin:0; padding:0; box-sizing:border-box; }}
+            .app-header {{
+                display: flex; align-items: center; justify-content: flex-end;
+                gap: 12px; padding: 6px 0; font-family: 'Montserrat', sans-serif;
+            }}
+            .header-bell {{ display:flex; align-items:center; cursor:pointer; }}
+            .header-avatar {{
+                width:42px; height:42px; border-radius:50%; background:#52AB98;
+                display:flex; align-items:center; justify-content:center;
+                color:white; font-weight:700; font-size:1rem;
+            }}
+            .logout-btn {{
+                display:inline-flex; align-items:center; gap:6px;
+                background:transparent; border:1.5px solid #ddd; border-radius:20px;
+                padding:7px 14px; cursor:pointer;
+                font-family:'Montserrat',sans-serif; font-size:0.75rem; font-weight:600;
+                color:#D32F2F; text-decoration:none;
+            }}
+            .logout-btn:hover {{ background:#D32F2F; color:white; border-color:#D32F2F; }}
+            .logout-btn:hover svg {{ stroke:white; }}
+        </style>
         <div class="app-header">
-            <div></div>
             <div class="header-bell">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                      fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -532,45 +567,23 @@ def render_header(page_key=""):
                 </svg>
             </div>
             <div class="header-avatar">{initial}</div>
+            <div class="logout-btn" onclick="
+                const buttons = window.parent.document.querySelectorAll('button');
+                for (const b of buttons) {{
+                    if (b.innerText.trim() === 'logout_trigger') {{ b.click(); break; }}
+                }}
+            ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="#D32F2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Log out
+            </div>
         </div>
         """,
-        unsafe_allow_html=True,
-    )
-    # Logout button
-    st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
-    logout_clicked = st.button("logout_trigger", key=f"logout_{page_key}")
-    components.html(
-        """
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap');
-            .logout-btn {
-                display: inline-flex; align-items: center; gap: 6px;
-                float: right; margin-top: -48px; margin-right: 0;
-                background: transparent; border: 1.5px solid #ddd; border-radius: 20px;
-                padding: 6px 14px; cursor: pointer;
-                font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600;
-                color: #D32F2F;
-            }
-            .logout-btn:hover { background: #D32F2F; color: white; border-color: #D32F2F; }
-            .logout-btn svg { width: 16px; height: 16px; }
-            .logout-btn:hover svg { stroke: white; }
-        </style>
-        <div class="logout-btn" onclick="
-            const buttons = window.parent.document.querySelectorAll('button');
-            for (const b of buttons) {
-                if (b.innerText.trim() === 'logout_trigger') { b.click(); break; }
-            }
-        ">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                 stroke="#D32F2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            Log out
-        </div>
-        """,
-        height=10,
+        height=55,
     )
     if logout_clicked:
         do_logout()
