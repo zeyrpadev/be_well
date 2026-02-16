@@ -699,7 +699,10 @@ def login_screen():
 
     st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
 
-    if st.button("Continue", type="primary"):
+    col1, col2, col3 = st.columns([1, 4, 1])  # middle column controls width
+    with col2:
+        continue_clicked = st.button("Continue", type="primary")
+    if continue_clicked:
         if not email or not password:
             st.warning("Please enter both email and password.")
         else:
