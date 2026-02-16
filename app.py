@@ -248,7 +248,9 @@ st.markdown("""
         gap: 12px;
         padding: 10px 0;
         border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
     }
+    .case-row:hover { background: #fafafa; }
     .case-row:last-of-type { border-bottom: none; }
     .case-row-img, .case-row-img-placeholder {
         width: 64px;
@@ -284,12 +286,30 @@ st.markdown("""
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .case-row-view {
+        margin-left: auto;
+        flex-shrink: 0;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--brand);
+        border: 1.5px solid #ddd;
+        border-radius: 20px;
+        padding: 5px 14px;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+    .case-row-view:hover {
+        background: var(--brand);
+        color: white;
+        border-color: var(--brand);
+    }
     @media (min-width: 769px) {
         .case-row-img, .case-row-img-placeholder {
             width: 80px; height: 80px; min-width: 80px;
         }
         .case-row-name { font-size: 1rem; }
         .case-row-symptom { font-size: 0.9rem; }
+        .case-row-view { font-size: 0.82rem; padding: 6px 18px; }
     }
 
     /* ── Responsive typography ── */
@@ -425,19 +445,17 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* Open button inside recent-cases card */
+    /* Open icon button inside recent-cases card */
     [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
         background: transparent !important;
-        border: 1.5px solid #ddd !important;
-        border-radius: 20px !important;
-        font-size: 0.75rem !important;
-        font-weight: 600 !important;
-        padding: 4px 14px !important;
+        border: none !important;
+        font-size: 1.4rem !important;
+        font-weight: 400 !important;
+        padding: 0 !important;
         width: auto !important;
         min-height: 0 !important;
         height: auto !important;
-        color: var(--brand) !important;
-        margin-top: -8px !important;
+        color: #333 !important;
     }
 
     /* Case entries inside the recent-cases card – remove all spacing */
@@ -763,21 +781,30 @@ def home_screen():
                         else '<div class="case-row-img-placeholder"></div>'
                     )
 
+                    # Hidden marker + hidden button for navigation
+                    st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
+                    clicked = st.button(f"view_{case_id}", key=f"case_{case_id}")
+
                     st.markdown(
                         f"""
-                        <div class="case-row">
+                        <div class="case-row" onclick="
+                            const buttons = window.parent.document.querySelectorAll('button');
+                            for (const b of buttons) {{
+                                if (b.innerText.trim() === 'view_{case_id}') {{ b.click(); break; }}
+                            }}
+                        ">
                             {img_html}
                             <div class="case-row-info">
                                 <div class="case-row-date">{display_date}</div>
                                 <div class="case-row-name">{child_name}</div>
                                 <div class="case-row-symptom">{symptom}</div>
                             </div>
+                            <div class="case-row-view">View ↗</div>
                         </div>
                         """,
                         unsafe_allow_html=True,
                     )
-                    # Hidden-looking open button (still needed for Streamlit navigation)
-                    if st.button("↗", key=f"case_{case_id}", type="secondary"):
+                    if clicked:
                         st.session_state.selected_case_id = case_id
                         if role == "parent":
                             navigate("acknowledge_report")
