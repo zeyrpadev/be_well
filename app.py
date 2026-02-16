@@ -90,26 +90,20 @@ st.markdown("""
     }
 
     /* ── Primary buttons (teal filled) ── */
-    /* Primary buttons */
     .stButton > button[kind="primary"] {
         background-color: var(--brand) !important;
         color: white !important;
         border: none !important;
         border-radius: 25px !important;
-        padding: 0.6rem 1.5rem !important;
+        padding: 0.5rem 1.2rem !important;
         font-weight: 600 !important;
-        font-size: 1rem !important;
-
-        width: auto !important;          /* ← remove full width */
-        min-width: 140px;                /* optional */
+        font-size: clamp(0.85rem, 2vw, 1rem) !important;
+        width: 100%;
+        transition: background-color 0.2s;
     }
-
-    /* Force wrapper left alignment */
-    .stButton {
-        display: flex !important;
-        justify-content: flex-start !important;
+    .stButton > button[kind="primary"]:hover {
+        background-color: var(--brand-light) !important;
     }
-
 
     /* Primary button responsive sizing */
     @media (min-width: 480px) {
@@ -362,11 +356,7 @@ st.markdown("""
     @media (min-width: 769px) {
         .stButton > button[kind="primary"] {
             max-width: 400px !important;
-            margin-left: 0 !important;
-            margin-right: auto !important;
-            display: block !important;
         }
-
         .stTextInput, .stTextArea, .stSelectbox, .stDateInput, .stFileUploader {
             max-width: 500px !important;
             margin-left: auto !important;
@@ -699,10 +689,7 @@ def login_screen():
 
     st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1, 3, 1])  # middle column controls width
-    with col2:
-        continue_clicked = st.button("Continue", type="primary")
-    if continue_clicked:
+    if st.button("Continue", type="primary"):
         if not email or not password:
             st.warning("Please enter both email and password.")
         else:
@@ -1050,15 +1037,17 @@ def symptom_entry_screen():
                 photo_url = None
                 if photo:
                     try:
-                        file_path = f"cases/{user_id}/{entry_date.isoformat()}_{photo.name}"
+                        import time as _time
+                        unique_name = f"{int(_time.time())}_{photo.name}"
+                        file_path = f"cases/{user_id}/{entry_date.isoformat()}_{unique_name}"
                         sb.storage.from_("case-photos").upload(
                             file_path,
                             photo.getvalue(),
                             {"content-type": photo.type},
                         )
                         photo_url = sb.storage.from_("case-photos").get_public_url(file_path)
-                    except Exception:
-                        pass
+                    except Exception as upload_err:
+                        st.warning(f"Photo upload failed: {upload_err}")
 
                 case_data = {
                     "child_id": selected_child["id"],
