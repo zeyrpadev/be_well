@@ -719,7 +719,9 @@ def login_screen():
     st.markdown(
         """
         <div class="social-row">
-            <div class="social-btn"><img src="https://img.icons8.com/?size=100&id=30840&format=png&color=000000"
+            <div class="social-btn">
+            <img src="https://img.icons8.com/?size=100&id=30840&format=png&color=000000"
+                width="20" style="vertical-align:middle;">
         </div>
             <div class="social-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
