@@ -95,7 +95,8 @@ st.markdown("""
         color: white !important;
         border: none !important;
         border-radius: 25px !important;
-        padding: clamp(0.5rem, 1.5vw, 0.7rem) clamp(1rem, 3vw, 2rem) !important;
+        padding: clamp(0.5rem, 1.5vw, 0.7rem)
+                 clamp(1rem, 3vw, 2rem) !important;
         font-weight: 600 !important;
         font-size: clamp(0.85rem, 2vw, 1rem) !important;
         width: 100%;
