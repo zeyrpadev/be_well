@@ -135,21 +135,23 @@ st.markdown("""
         }
     }
 
-    /* ── Secondary buttons (case entries – look like text links) ── */
+    /* ── Secondary buttons (case entries – View button) ── */
     .stButton > button[kind="secondary"] {
         background: transparent !important;
-        color: var(--text-dark) !important;
-        border: none !important;
+        color: var(--brand) !important;
+        border: 1.5px solid #ddd !important;
+        border-radius: 20px !important;
         box-shadow: none !important;
-        padding: 0.2rem 0 !important;
-        text-align: left !important;
-        font-weight: 700 !important;
-        font-size: 0.95rem !important;
+        padding: 5px 14px !important;
+        text-align: center !important;
+        font-weight: 600 !important;
+        font-size: 0.75rem !important;
         width: auto !important;
     }
     .stButton > button[kind="secondary"]:hover {
-        background: transparent !important;
-        color: var(--brand) !important;
+        background: var(--brand) !important;
+        color: white !important;
+        border-color: var(--brand) !important;
     }
 
     /* Social / outline buttons */
@@ -876,70 +878,24 @@ def home_screen():
                     case_id = case["id"]
 
                     img_html = (
-                        f'<img src="{photo_url}" class="case-row-img">'
+                        f'<img src="{photo_url}" style="width:64px;height:64px;min-width:64px;object-fit:cover;border-radius:12px;">'
                         if photo_url
-                        else '<div class="case-row-img-placeholder"></div>'
+                        else '<div style="width:64px;height:64px;min-width:64px;background:#e8e8e8;border-radius:12px;"></div>'
                     )
 
-                    # Hidden button for navigation
-                    st.markdown('<span class="hide-next-btn"></span>', unsafe_allow_html=True)
-                    btn_label = f"view_{case_id}"
-                    clicked = st.button(btn_label, key=f"case_{case_id}")
-
-                    # Clickable case row via components.html (supports onclick)
-                    components.html(
-                        f"""
-                        <style>
-                            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-                            * {{ margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }}
-                            .case-row {{
-                                display:flex; align-items:center; gap:12px; padding:8px 4px;
-                                cursor:pointer; border-bottom:1px solid #f0f0f0;
-                            }}
-                            .case-row:hover {{ background:#fafafa; }}
-                            .case-row-img, .case-row-img-placeholder {{
-                                width:64px; height:64px; min-width:64px;
-                                object-fit:cover; border-radius:12px;
-                            }}
-                            .case-row-img-placeholder {{ background:#e8e8e8; }}
-                            .case-row-info {{ flex:1; min-width:0; }}
-                            .case-row-date {{ font-size:0.72rem; color:#2B6777; font-weight:500; }}
-                            .case-row-name {{ font-size:0.92rem; font-weight:700; color:#1E1E1E;
-                                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
-                            .case-row-symptom {{ font-size:0.82rem; color:#555;
-                                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }}
-                            .case-row-view {{
-                                margin-left:auto; flex-shrink:0; font-size:0.75rem; font-weight:600;
-                                color:#2B6777; border:1.5px solid #ddd; border-radius:20px;
-                                padding:5px 14px; white-space:nowrap; cursor:pointer;
-                            }}
-                            .case-row-view:hover {{ background:#2B6777; color:white; border-color:#2B6777; }}
-                        </style>
-                        <div class="case-row" onclick="triggerBtn()" ontouchend="triggerBtn()">
+                    # Case row as markdown + native button
+                    st.markdown(
+                        f"""<div style="display:flex;align-items:center;gap:12px;padding:8px 4px;border-bottom:1px solid #f0f0f0;">
                             {img_html}
-                            <div class="case-row-info">
-                                <div class="case-row-date">{display_date}</div>
-                                <div class="case-row-name">{child_name}</div>
-                                <div class="case-row-symptom">{symptom}</div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:0.72rem;color:#2B6777;font-weight:500;">{display_date}</div>
+                                <div style="font-size:0.92rem;font-weight:700;color:#1E1E1E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{child_name}</div>
+                                <div style="font-size:0.82rem;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{symptom}</div>
                             </div>
-                            <div class="case-row-view">View ↗</div>
-                        </div>
-                        <script>
-                            function triggerBtn() {{
-                                try {{
-                                    const buttons = window.parent.document.querySelectorAll('button');
-                                    for (const b of buttons) {{
-                                        if (b.innerText.trim() === '{btn_label}') {{ b.click(); return; }}
-                                    }}
-                                }} catch(e) {{
-                                    // Fallback: postMessage for sandboxed iframes
-                                    window.parent.postMessage({{stCommVersion:1, type:'streamlit:setComponentValue', value:true}}, '*');
-                                }}
-                            }}
-                        </script>
-                        """,
-                        height=90,
+                        </div>""",
+                        unsafe_allow_html=True,
                     )
+                    clicked = st.button("View ↗", key=f"case_{case_id}", type="secondary")
                     if clicked:
                         st.session_state.selected_case_id = case_id
                         if role == "parent":
