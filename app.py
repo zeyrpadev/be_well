@@ -95,7 +95,7 @@ st.markdown("""
         color: white !important;
         border: none !important;
         border-radius: 25px !important;
-        padding: 0.5rem 1.2rem !important;
+        padding: clamp(0.5rem, 1.5vw, 0.7rem) clamp(1rem, 3vw, 2rem) !important;
         font-weight: 600 !important;
         font-size: clamp(0.85rem, 2vw, 1rem) !important;
         width: 100%;
@@ -103,19 +103,6 @@ st.markdown("""
     }
     .stButton > button[kind="primary"]:hover {
         background-color: var(--brand-light) !important;
-    }
-
-    /* Primary button responsive sizing */
-    @media (min-width: 480px) {
-        .stButton > button[kind="primary"] {
-            padding: 0.6rem 1.5rem !important;
-        }
-    }
-    @media (min-width: 769px) {
-        .stButton > button[kind="primary"] {
-            padding: 0.7rem 2rem !important;
-            font-size: 1rem !important;
-        }
     }
 
     /* ── Secondary buttons (case entries – look like text links) ── */
