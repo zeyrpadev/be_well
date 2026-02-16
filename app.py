@@ -559,13 +559,15 @@ def render_header(page_key=""):
             }}
             .header-bell {{ display:flex; align-items:center; cursor:pointer; }}
             .header-avatar {{
-                width:42px; height:42px; border-radius:50%; background:#52AB98;
+                width:clamp(38px, 10vw, 48px); height:clamp(38px, 10vw, 48px);
+                border-radius:50%; background:#52AB98;
                 display:flex; align-items:center; justify-content:center;
-                color:white; font-weight:700; font-size:1rem;
+                color:white; font-weight:700; font-size:clamp(0.9rem, 2.5vw, 1.1rem);
             }}
             .logout-btn {{
                 display:inline-flex; align-items:center; justify-content:center;
-                width:42px; height:42px; border-radius:50%;
+                width:clamp(38px, 10vw, 48px); height:clamp(38px, 10vw, 48px);
+                border-radius:50%;
                 background:transparent; border:1.5px solid #ddd;
                 cursor:pointer; text-decoration:none;
             }}
@@ -587,7 +589,7 @@ def render_header(page_key=""):
                     if (b.innerText.trim() === 'logout_trigger') {{ b.click(); break; }}
                 }}
             ">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                      fill="none" stroke="#D32F2F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -596,7 +598,7 @@ def render_header(page_key=""):
             </div>
         </div>
         """,
-        height=55,
+        height=60,
     )
     if logout_clicked:
         do_logout()
@@ -739,10 +741,7 @@ def login_screen():
     st.markdown(
         """
         <div class="social-row">
-            <div class="social-btn">
-                <img src="https://img.icons8.com/?size=100&id=30840&format=png&color=000000"
-                     width="20" style="vertical-align:middle;">
-            </div>
+            <div class="social-btn">🍎</div>
             <div class="social-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                      width="20" style="vertical-align:middle;">
