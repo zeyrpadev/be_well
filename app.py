@@ -141,12 +141,25 @@ st.markdown("""
         content: ""; flex: 1; height: 1px; background: #ddd;
     }
 
-    /* Header bell icon */
+    /* App header bar */
+    .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 0.3rem 0;
+    }
     .header-bell {
         display: flex; align-items: center; justify-content: center;
-        padding-top: 0.3rem;
     }
     .header-bell svg {width: 24px; height: 24px;}
+    .header-avatar {
+        width: 42px; height: 42px; border-radius: 50%; background: #52AB98;
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: 700; font-size: 1rem;
+        font-family: 'Montserrat', sans-serif;
+        flex-shrink: 0;
+    }
 
 
     /* ── File uploader – smaller drag-and-drop text ── */
@@ -228,25 +241,55 @@ st.markdown("""
         font-weight: 600;
     }
 
-    /* ── Responsive case image ── */
-    .case-img {
-        width: 100%;
-        max-width: 80px;
-        aspect-ratio: 1;
-        object-fit: cover;
-        border-radius: 14px;
+    /* ── Case row (pure HTML – never stacks) ── */
+    .case-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
     }
-    .case-img-placeholder {
-        width: 100%;
-        max-width: 80px;
-        aspect-ratio: 1;
-        border-radius: 14px;
+    .case-row:last-of-type { border-bottom: none; }
+    .case-row-img, .case-row-img-placeholder {
+        width: 64px;
+        height: 64px;
+        min-width: 64px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    .case-row-img-placeholder {
         background: #e8e8e8;
     }
+    .case-row-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .case-row-date {
+        font-size: 0.72rem;
+        color: var(--brand);
+        font-weight: 500;
+    }
+    .case-row-name {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .case-row-symptom {
+        font-size: 0.82rem;
+        color: #555;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     @media (min-width: 769px) {
-        .case-img, .case-img-placeholder {
-            max-width: 100px;
+        .case-row-img, .case-row-img-placeholder {
+            width: 80px; height: 80px; min-width: 80px;
         }
+        .case-row-name { font-size: 1rem; }
+        .case-row-symptom { font-size: 0.9rem; }
     }
 
     /* ── Responsive typography ── */
@@ -382,17 +425,19 @@ st.markdown("""
         margin: 0 !important;
     }
 
-    /* Open icon button inside recent-cases card */
+    /* Open button inside recent-cases card */
     [data-testid="stVerticalBlockBorderWrapper"] .stButton > button[kind="secondary"] {
         background: transparent !important;
-        border: none !important;
-        font-size: 1.4rem !important;
-        font-weight: 400 !important;
-        padding: 0 !important;
+        border: 1.5px solid #ddd !important;
+        border-radius: 20px !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        padding: 4px 14px !important;
         width: auto !important;
         min-height: 0 !important;
         height: auto !important;
-        color: #333 !important;
+        color: var(--brand) !important;
+        margin-top: -8px !important;
     }
 
     /* Case entries inside the recent-cases card – remove all spacing */
@@ -457,18 +502,22 @@ def do_logout():
 
 def render_header(page_key=""):
     initial = (st.session_state.display_name or "U")[0].upper()
-    bell_svg = '''<div class="header-bell"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>'''
-    spacer, bell_col, avatar_col = st.columns([6, 1, 1])
-    with bell_col:
-        st.markdown(bell_svg, unsafe_allow_html=True)
-    with avatar_col:
-        st.markdown(
-            f"""<div style="width:clamp(36px,8vw,48px);height:clamp(36px,8vw,48px);border-radius:50%;background:#52AB98;
-            display:flex;align-items:center;justify-content:center;
-            color:white;font-weight:700;font-size:1rem;font-family:'Montserrat',sans-serif;">
-            {initial}</div>""",
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        f"""
+        <div class="app-header">
+            <div></div>
+            <div class="header-bell">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                     fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </div>
+            <div class="header-avatar">{initial}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def render_back_nav(label, button_key):
@@ -708,36 +757,33 @@ def home_screen():
                     photo_url = case.get("photo_url", "")
                     case_id = case["id"]
 
-                    img_col, info_col, btn_col = st.columns([1.2, 2.5, 1])
+                    img_html = (
+                        f'<img src="{photo_url}" class="case-row-img">'
+                        if photo_url
+                        else '<div class="case-row-img-placeholder"></div>'
+                    )
 
-                    with img_col:
-                        if photo_url:
-                            st.markdown(
-                                f'<img src="{photo_url}" class="case-img">',
-                                unsafe_allow_html=True,
-                            )
+                    st.markdown(
+                        f"""
+                        <div class="case-row">
+                            {img_html}
+                            <div class="case-row-info">
+                                <div class="case-row-date">{display_date}</div>
+                                <div class="case-row-name">{child_name}</div>
+                                <div class="case-row-symptom">{symptom}</div>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    # Hidden-looking open button (still needed for Streamlit navigation)
+                    if st.button("Open ↗", key=f"case_{case_id}", type="secondary"):
+                        st.session_state.selected_case_id = case_id
+                        if role == "parent":
+                            navigate("acknowledge_report")
                         else:
-                            st.markdown(
-                                '<div class="case-img-placeholder"></div>',
-                                unsafe_allow_html=True,
-                            )
-
-                    with info_col:
-                        st.markdown(
-                            f"<div style='font-size:0.75rem;color:#2B6777;font-weight:500;'>{display_date}</div>"
-                            f"<div style='font-size:0.95rem;font-weight:700;color:#1E1E1E;'>{child_name}</div>"
-                            f"<div style='font-size:0.85rem;color:#555;'>{symptom}</div>",
-                            unsafe_allow_html=True,
-                        )
-
-                    with btn_col:
-                        if st.button("↗", key=f"case_{case_id}"):
-                            st.session_state.selected_case_id = case_id
-                            if role == "parent":
-                                navigate("acknowledge_report")
-                            else:
-                                navigate("case_details")
-                            st.rerun()
+                            navigate("case_details")
+                        st.rerun()
 
     except Exception as e:
         st.error(f"Failed to load cases: {e}")
