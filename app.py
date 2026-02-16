@@ -98,7 +98,7 @@ st.markdown("""
         padding: 0.5rem 1.2rem !important;
         font-weight: 600 !important;
         font-size: clamp(0.85rem, 2vw, 1rem) !important;
-        width: 100%;
+        width: auto;
         transition: background-color 0.2s;
     }
     .stButton > button[kind="primary"]:hover {
