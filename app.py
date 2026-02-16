@@ -118,6 +118,13 @@ st.markdown("""
         }
     }
 
+    /* Force primary button wrapper to left align */
+        .stButton {
+            display: flex !important;
+            justify-content: flex-start !important;
+        }
+
+
     /* ── Secondary buttons (case entries – look like text links) ── */
     .stButton > button[kind="secondary"] {
         background: transparent !important;
