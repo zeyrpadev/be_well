@@ -328,9 +328,6 @@ st.markdown("""
 
     /* ── Responsive typography ── */
     @media (min-width: 769px) {
-        .carer-home-title {
-            font-size: 1.8rem !important;
-        }
         .symptom-bubble {
             font-size: 1rem;
             padding: 1rem 1.4rem;
@@ -352,6 +349,10 @@ st.markdown("""
 
     /* ── Responsive centering for form elements ── */
     @media (min-width: 480px) {
+        .stButton:has(> button[kind="primary"]) {
+            display: flex !important;
+            justify-content: center !important;
+        }
         .stButton > button[kind="primary"] {
             max-width: 320px !important;
             display: block !important;
@@ -443,10 +444,14 @@ st.markdown("""
 
     /* Carer home title */
     .carer-home-title {
-        font-size: 1.4rem;
+        font-size: clamp(1.3rem, 3vw, 2rem);
         font-weight: 800;
         color: var(--text-dark);
         margin-bottom: 1rem;
+        text-align: center;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* Disclaimer text */
